@@ -1,0 +1,6 @@
+@UserProtection.API_HostAddress = http://localhost:5019
+
+GET {{UserProtection.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
