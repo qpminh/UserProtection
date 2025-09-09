@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Interfaces;
 using UserProtection.Domain.Entities;
 

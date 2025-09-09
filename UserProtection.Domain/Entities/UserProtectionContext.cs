@@ -549,7 +549,6 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
         modelBuilder.Entity<User>(entity =>
         {
-            //entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C0C5C261A");
 
             entity.ToTable("Users", "core");
 

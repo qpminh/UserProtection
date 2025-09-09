@@ -1,9 +1,13 @@
 
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using UserProtection.Application.Dependency;
+using UserProtection.Application.Map;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Dependency;
 using UserProtection.Infrastructure.SeedData;
+
 
 namespace UserProtection.API
 {
@@ -19,6 +23,12 @@ namespace UserProtection.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            //Map
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile(new MapProfile());
+            });
 
             //Service
             builder.Services.AddApplicationServices();

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,7 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
+    <Folder Include="Dtos\Course\" />
+    <Folder Include="Dtos\Security\" />
+    <Folder Include="Dtos\Payment\" />
     <Folder Include="Services\Courses\" />
     <Folder Include="Services\Payment\" />
     <Folder Include="Services\Security\" />

@@ -6,8 +6,6 @@ namespace UserProtection.Domain.Entities;
 
 public partial class User: IdentityUser
 {
-    //public string UserId { get; set; } = null!;
-
     public int? TenantId { get; set; }
 
     public string? FirstName { get; set; }
