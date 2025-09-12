@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces;
 using UserProtection.Infrastructure.Repositories.Core;
+using UserProtection.Infrastructure.Repositories.Security;
 using UserProtection.Infrastructure.Repositories.Payment;
 
 namespace UserProtection.Infrastructure.Dependency
@@ -25,6 +26,9 @@ namespace UserProtection.Infrastructure.Dependency
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
 
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+            services.AddScoped<ITrustedLinkRepository, TrustedLinkRepository>();
+            services.AddScoped<ISuspiciousLinkRepository, SuspiciousLinkRepository>();
             return services;
         }
     }

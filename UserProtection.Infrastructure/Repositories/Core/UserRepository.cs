@@ -43,7 +43,7 @@ namespace UserProtection.Infrastructure.Repositories.Core
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(Guid id)
+        public async Task Delete(String id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user != null)
@@ -53,21 +53,6 @@ namespace UserProtection.Infrastructure.Repositories.Core
             }
         }
 
-        public async Task<SignInResult> Login(string username, string password)
-        {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
-            return result;
-        }
-
-        public async Task Logout()
-        {
-            await _signInManager.SignOutAsync();
-        }
+        
     }
 }

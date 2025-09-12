@@ -2,6 +2,9 @@
 using UserProtection.Application.Interfaces;
 using UserProtection.Application.Map;
 using UserProtection.Application.Services.Core;
+using UserProtection.Application.Services.Security;
+using UserProtection.Infrastructure.Interfaces;
+using UserProtection.Infrastructure.Repositories;
 using UserProtection.Application.Services.Payment;
 
 namespace UserProtection.Application.Dependency
@@ -23,6 +26,8 @@ namespace UserProtection.Application.Dependency
             services.AddScoped<SubscriptionService>();
             services.AddScoped<PaymentService>();
 
+            services.AddScoped<ITrustedLinkService, TrustedLinkService>();
+            services.AddScoped<ISuspiciousLinkService, SuspiciousLinkService>();
             return services;
         }
     }

@@ -8,6 +8,6 @@ namespace UserProtection.Infrastructure.Interfaces
         Task<IEnumerable<User>> GetAll();
         Task Add(User user, string password);
         Task Update(User user);
-        Task Delete(Guid id);
+        Task Delete(String id);
     }
 }

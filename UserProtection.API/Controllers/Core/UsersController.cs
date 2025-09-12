@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Interfaces;
 
-namespace UserProtection.API.Controllers
+namespace UserProtection.API.Controllers.Core
 {
     [ApiController]
     [Route("api/[controller]")]
