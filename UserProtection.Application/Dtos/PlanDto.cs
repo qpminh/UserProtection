@@ -9,3 +9,12 @@ public class PlanDto
     public IEnumerable<string> Courses { get; set; } = new List<string>();
     public IEnumerable<string> Features { get; set; } = new List<string>();
 }
+
+public class CreatePlanRequest
+{
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
+    public decimal Price { get; set; }
+    public string BillingCycle { get; set; } = null!;
+    public bool IsActive { get; set; } = true;
+}
