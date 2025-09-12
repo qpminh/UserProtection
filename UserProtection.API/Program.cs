@@ -1,15 +1,14 @@
-﻿
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
+using UserProtection.API.Middlewares;
 using UserProtection.Application.Dependency;
-using UserProtection.Application.Map;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Dependency;
 using UserProtection.Infrastructure.Helpers;
 using UserProtection.Infrastructure.SeedData;
-
 
 namespace UserProtection.API
 {
@@ -19,20 +18,46 @@ namespace UserProtection.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            // Add controllers
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            // Swagger + JWT support
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "UserProtection API", Version = "v1" });
 
-            //Service
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Nhập JWT token vào đây. Ví dụ: Bearer {token}"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
+            // Service DI
             builder.Services.AddApplicationServices();
-
-            //Respo
             builder.Services.AddInfrastructureServices(builder.Configuration);
 
-            //Identity
+            // Identity
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -45,6 +70,7 @@ namespace UserProtection.API
             .AddEntityFrameworkStores<UserProtectionContext>()
             .AddDefaultTokenProviders();
 
+            // VNPay helper
             builder.Services.AddSingleton<VnPayHelper>(sp =>
             {
                 var config = builder.Configuration.GetSection("VnPay");
@@ -54,9 +80,10 @@ namespace UserProtection.API
                     config["VnpUrl"]!
                 );
             });
+
             // JWT Config
             var jwtSettings = builder.Configuration.GetSection("Jwt");
-            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
             builder.Services.AddAuthentication(options =>
             {
@@ -74,10 +101,9 @@ namespace UserProtection.API
                     ValidIssuer = jwtSettings["Issuer"],
                     ValidAudience = jwtSettings["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ClockSkew = TimeSpan.Zero // không delay 5 phút mặc định
+                    ClockSkew = TimeSpan.Zero 
                 };
             });
-
 
             var app = builder.Build();
 
@@ -88,26 +114,24 @@ namespace UserProtection.API
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                await DbInitializer.SeedDefaultAdminAsync(services);   
-                await RoleSeeder.SeedRolesAsync(roleManager, logger); 
-                await UserSeeder.SeedUsersAsync(services);             
+                await DbInitializer.SeedDefaultAdminAsync(services);
+                await RoleSeeder.SeedRolesAsync(roleManager, logger);
+                await UserSeeder.SeedUsersAsync(services);
             }
 
-            // Configure the HTTP request pipeline.
+            // Middleware
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            // middleware custom
-            app.UseMiddleware<UserProtection.API.Middleware.ErrorHandlingMiddleware>();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
+            app.UseAuthentication(); 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

@@ -2,7 +2,7 @@
 using System.Text.Json;
 using UserProtection.Application.Dtos.Core;
 
-namespace UserProtection.API.Middleware
+namespace UserProtection.API.Middlewares
 {
     public class ErrorHandlingMiddleware
     {

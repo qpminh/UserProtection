@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserProtection.API.Middlewares;
 
-namespace UserProtection.API.Controllers
+namespace UserProtection.API.Controllers.Security
 {
     [ApiController]
     [Route("api/[controller]")]

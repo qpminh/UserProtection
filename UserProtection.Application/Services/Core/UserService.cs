@@ -110,17 +110,19 @@ namespace UserProtection.Application.Services.Core
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),   
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
                 new Claim("tenantId", user.TenantId?.ToString() ?? "")
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
             var token = new JwtSecurityToken(
-                _config["Jwt:Issuer"],
-                _config["Jwt:Audience"],
-                claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(_config["Jwt:ExpireMinutes"])),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

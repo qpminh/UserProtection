@@ -15,12 +15,4 @@
     <ProjectReference Include="..\UserProtection.Infrastructure\UserProtection.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\Course\" />
-    <Folder Include="Dtos\Payment\" />
-    <Folder Include="Services\Courses\" />
-    <Folder Include="Services\Payment\" />
-    <Folder Include="Services\Security\" />
-  </ItemGroup>
-
 </Project>

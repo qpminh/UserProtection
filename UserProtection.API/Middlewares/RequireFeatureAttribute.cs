@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using UserProtection.Domain.Entities;
 
 namespace UserProtection.API.Middlewares
@@ -19,8 +20,7 @@ namespace UserProtection.API.Middlewares
         {
             var db = context.HttpContext.RequestServices.GetRequiredService<UserProtectionContext>();
 
-            // Lấy userId từ JWT Claims
-            var userId = context.HttpContext.User.FindFirst("sub")?.Value;
+            var userId = context.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -40,7 +40,6 @@ namespace UserProtection.API.Middlewares
                 return;
             }
 
-            // Check Feature
             var hasFeature = subscription.Plan.PlanFeatures.Any(f => f.Feature.Name == _featureName);
 
             if (!hasFeature)

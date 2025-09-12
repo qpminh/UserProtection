@@ -52,7 +52,5 @@ namespace UserProtection.Infrastructure.Repositories.Core
                 await _context.SaveChangesAsync();
             }
         }
-
-        
     }
 }

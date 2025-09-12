@@ -3,7 +3,7 @@ using UserProtection.Application.Dtos;
 using UserProtection.Application.Services;
 using UserProtection.Application.Services.Payment;
 
-namespace UserProtection.API.Controllers;
+namespace UserProtection.API.Controllers.Payment;
 
 [ApiController]
 [Route("api/[controller]")]

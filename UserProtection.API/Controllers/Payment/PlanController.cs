@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Services.Payment;
 
-namespace UserProtection.API.Controllers;
+namespace UserProtection.API.Controllers.Payment;
 
 [ApiController]
 [Route("api/[controller]")]
