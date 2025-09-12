@@ -1,14 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UserProtection.Application.Interfaces;
+using UserProtection.Application.Map;
 using UserProtection.Application.Services.Core;
-using UserProtection.Infrastructure.Interfaces;
-using UserProtection.Infrastructure.Repositories;
+using UserProtection.Application.Services.Payment;
 
 namespace UserProtection.Application.Dependency
 {
@@ -21,7 +15,14 @@ namespace UserProtection.Application.Dependency
             //    typeof(UserProtection.Application.Dependency.DependencyInjection).Assembly, // Correctly registers the application layer
             //    typeof(UserProtection.Application.Features.Products.Queries.UsersById).Assembly // Add this line
             //));
+
+            services.AddAutoMapper(typeof(MapProfile).Assembly);
+
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<PlanService>();
+            services.AddScoped<SubscriptionService>();
+            services.AddScoped<PaymentService>();
+
             return services;
         }
     }

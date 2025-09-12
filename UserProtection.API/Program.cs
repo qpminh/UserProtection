@@ -1,8 +1,8 @@
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using UserProtection.Application.Dependency;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Dependency;
+using UserProtection.Infrastructure.Helpers;
 using UserProtection.Infrastructure.SeedData;
 
 namespace UserProtection.API
@@ -39,6 +39,15 @@ namespace UserProtection.API
             .AddEntityFrameworkStores<UserProtectionContext>()
             .AddDefaultTokenProviders();
 
+            builder.Services.AddSingleton<VnPayHelper>(sp =>
+            {
+                var config = builder.Configuration.GetSection("VnPay");
+                return new VnPayHelper(
+                    config["TmnCode"]!,
+                    config["HashSecret"]!,
+                    config["VnpUrl"]!
+                );
+            });
 
             var app = builder.Build();
 
@@ -48,10 +57,10 @@ namespace UserProtection.API
                 var services = scope.ServiceProvider;
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                var context = services.GetRequiredService<UserProtectionContext>();
 
-                await DbInitializer.SeedDefaultAdminAsync(services);
-                await RoleSeeder.SeedRolesAsync(roleManager, logger);
+                await DbInitializer.SeedDefaultAdminAsync(services);   
+                await RoleSeeder.SeedRolesAsync(roleManager, logger); 
+                await UserSeeder.SeedUsersAsync(services);             
             }
 
             // Configure the HTTP request pipeline.
@@ -63,8 +72,8 @@ namespace UserProtection.API
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

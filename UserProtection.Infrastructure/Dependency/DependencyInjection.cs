@@ -1,14 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces;
 using UserProtection.Infrastructure.Repositories.Core;
+using UserProtection.Infrastructure.Repositories.Payment;
 
 namespace UserProtection.Infrastructure.Dependency
 {
@@ -25,6 +21,10 @@ namespace UserProtection.Infrastructure.Dependency
             //    provider.GetRequiredService<UserProtectionContext>());
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPlanRepository, PlanRepository>();
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+
             return services;
         }
     }

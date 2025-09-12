@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UserProtection.Application.Interfaces;
+﻿using UserProtection.Application.Interfaces;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces;
 

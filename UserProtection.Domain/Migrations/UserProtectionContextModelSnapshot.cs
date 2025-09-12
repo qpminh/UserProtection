@@ -678,6 +678,28 @@ namespace UserProtection.Domain.Migrations
                     b.ToTable("Enrollments", "learning");
                 });
 
+            modelBuilder.Entity("UserProtection.Domain.Entities.Feature", b =>
+                {
+                    b.Property<int>("FeatureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeatureId"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("FeatureId");
+
+                    b.ToTable("Features", "billing");
+                });
+
             modelBuilder.Entity("UserProtection.Domain.Entities.Payment", b =>
                 {
                     b.Property<int>("PaymentId")
@@ -764,6 +786,36 @@ namespace UserProtection.Domain.Migrations
                         .IsUnique();
 
                     b.ToTable("Plans", "billing");
+                });
+
+            modelBuilder.Entity("UserProtection.Domain.Entities.PlanCourse", b =>
+                {
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlanId", "CourseId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("PlanCourses", "billing");
+                });
+
+            modelBuilder.Entity("UserProtection.Domain.Entities.PlanFeature", b =>
+                {
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlanId", "FeatureId");
+
+                    b.HasIndex("FeatureId");
+
+                    b.ToTable("PlanFeatures", "billing");
                 });
 
             modelBuilder.Entity("UserProtection.Domain.Entities.Subscription", b =>
@@ -1462,6 +1514,44 @@ namespace UserProtection.Domain.Migrations
                     b.Navigation("Subscription");
                 });
 
+            modelBuilder.Entity("UserProtection.Domain.Entities.PlanCourse", b =>
+                {
+                    b.HasOne("UserProtection.Domain.Entities.Course", "Course")
+                        .WithMany("PlanCourses")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UserProtection.Domain.Entities.Plan", "Plan")
+                        .WithMany("PlanCourses")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("UserProtection.Domain.Entities.PlanFeature", b =>
+                {
+                    b.HasOne("UserProtection.Domain.Entities.Feature", "Feature")
+                        .WithMany("PlanFeatures")
+                        .HasForeignKey("FeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UserProtection.Domain.Entities.Plan", "Plan")
+                        .WithMany("PlanFeatures")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Feature");
+
+                    b.Navigation("Plan");
+                });
+
             modelBuilder.Entity("UserProtection.Domain.Entities.Subscription", b =>
                 {
                     b.HasOne("UserProtection.Domain.Entities.Plan", "Plan")
@@ -1639,6 +1729,8 @@ namespace UserProtection.Domain.Migrations
 
                     b.Navigation("Enrollments");
 
+                    b.Navigation("PlanCourses");
+
                     b.Navigation("UserCourseProgresses");
                 });
 
@@ -1649,8 +1741,17 @@ namespace UserProtection.Domain.Migrations
                     b.Navigation("UserCourseProgresses");
                 });
 
+            modelBuilder.Entity("UserProtection.Domain.Entities.Feature", b =>
+                {
+                    b.Navigation("PlanFeatures");
+                });
+
             modelBuilder.Entity("UserProtection.Domain.Entities.Plan", b =>
                 {
+                    b.Navigation("PlanCourses");
+
+                    b.Navigation("PlanFeatures");
+
                     b.Navigation("Subscriptions");
                 });
 

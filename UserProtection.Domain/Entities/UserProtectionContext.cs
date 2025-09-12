@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 
 namespace UserProtection.Domain.Entities;
 
@@ -57,6 +55,8 @@ public partial class UserProtectionContext : IdentityDbContext<User>
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
+    public virtual DbSet<Feature> Features { get; set; }
+    public virtual DbSet<PlanFeature> PlanFeatures { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -283,6 +283,47 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Courses_User");
+        });
+
+        modelBuilder.Entity<PlanCourse>(entity =>
+        {
+            entity.ToTable("PlanCourses", "billing"); 
+
+            // composite key
+            entity.HasKey(pc => new { pc.PlanId, pc.CourseId });
+
+            entity.HasOne(pc => pc.Plan)
+                  .WithMany(p => p.PlanCourses)
+                  .HasForeignKey(pc => pc.PlanId);
+
+            entity.HasOne(pc => pc.Course)
+                  .WithMany(c => c.PlanCourses)
+                  .HasForeignKey(pc => pc.CourseId);
+        });
+
+        modelBuilder.Entity<PlanFeature>(entity =>
+        {
+            entity.ToTable("PlanFeatures", "billing");
+
+            entity.HasKey(pf => new { pf.PlanId, pf.FeatureId });
+
+            entity.HasOne(pf => pf.Plan)
+                  .WithMany(p => p.PlanFeatures)
+                  .HasForeignKey(pf => pf.PlanId);
+
+            entity.HasOne(pf => pf.Feature)
+                  .WithMany(f => f.PlanFeatures)
+                  .HasForeignKey(pf => pf.FeatureId);
+        });
+
+        modelBuilder.Entity<Feature>(entity =>
+        {
+            entity.ToTable("Features", "billing");
+
+            entity.HasKey(f => f.FeatureId);
+
+            entity.Property(f => f.Name).HasMaxLength(100);
+            entity.Property(f => f.Description).HasMaxLength(500);
         });
 
         modelBuilder.Entity<CourseModule>(entity =>

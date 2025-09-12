@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace UserProtection.Domain.Entities;
+﻿namespace UserProtection.Domain.Entities;
 
 public partial class Tenant
 {

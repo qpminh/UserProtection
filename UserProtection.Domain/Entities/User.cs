@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
 
 namespace UserProtection.Domain.Entities;
 
-public partial class User: IdentityUser
+public partial class User : IdentityUser
 {
     //public string UserId { get; set; } = null!;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace UserProtection.Domain.Entities;
+﻿namespace UserProtection.Domain.Entities;
 
 public partial class Plan
 {
@@ -20,4 +17,6 @@ public partial class Plan
     public bool IsActive { get; set; }
 
     public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+    public virtual ICollection<PlanCourse> PlanCourses { get; set; } = new List<PlanCourse>();
+    public virtual ICollection<PlanFeature> PlanFeatures { get; set; } = new List<PlanFeature>();
 }

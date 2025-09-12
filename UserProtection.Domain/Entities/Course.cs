@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace UserProtection.Domain.Entities;
+﻿namespace UserProtection.Domain.Entities;
 
 public partial class Course
 {
@@ -40,4 +37,5 @@ public partial class Course
     public virtual User? User { get; set; }
 
     public virtual ICollection<UserCourseProgress> UserCourseProgresses { get; set; } = new List<UserCourseProgress>();
+    public virtual ICollection<PlanCourse> PlanCourses { get; set; } = new List<PlanCourse>();
 }
