@@ -1,7 +1,10 @@
-
+﻿
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using UserProtection.Application.Dependency;
 using UserProtection.Application.Map;
 using UserProtection.Domain.Entities;
@@ -49,6 +52,30 @@ namespace UserProtection.API
             .AddEntityFrameworkStores<UserProtectionContext>()
             .AddDefaultTokenProviders();
 
+            // JWT Config
+            var jwtSettings = builder.Configuration.GetSection("Jwt");
+            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ClockSkew = TimeSpan.Zero // không delay 5 phút mặc định
+                };
+            });
+
 
             var app = builder.Build();
 
@@ -71,10 +98,14 @@ namespace UserProtection.API
                 app.UseSwaggerUI();
             }
 
+            // middleware custom
+            app.UseMiddleware<UserProtection.API.Middleware.ErrorHandlingMiddleware>();
+
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 

@@ -2,7 +2,7 @@
 using UserProtection.Application.Interfaces;
 using UserProtection.Domain.Entities;
 
-namespace UserProtection.API.Controllers
+namespace UserProtection.API.Controllers.Core
 {
     [ApiController]
     [Route("api/[controller]")]

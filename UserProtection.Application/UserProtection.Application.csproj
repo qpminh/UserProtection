@@ -16,11 +16,9 @@
 
   <ItemGroup>
     <Folder Include="Dtos\Course\" />
-    <Folder Include="Dtos\Security\" />
     <Folder Include="Dtos\Payment\" />
     <Folder Include="Services\Courses\" />
     <Folder Include="Services\Payment\" />
-    <Folder Include="Services\Security\" />
   </ItemGroup>
 
 </Project>

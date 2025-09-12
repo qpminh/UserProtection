@@ -17,7 +17,7 @@ namespace UserProtection.Application.Interfaces
         Task Update(User user);
         Task Delete(String id);
         Task<IdentityResult> Register(User user, string password);
-        Task<SignInResult> Login(string username, string password);
+        Task<string> Login(string email, string password);
         Task Logout();
     }
 }
