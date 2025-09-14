@@ -7,8 +7,8 @@ public interface IFeatureRepository
 {
     Task<IEnumerable<Feature>> GetAllAsync();
     Task<Feature?> GetByIdAsync(int id);
-    Task<Feature> AddAsync(Feature feature);
-    Task UpdateAsync(Feature feature);
-    Task DeleteAsync(Feature feature);
+    Task AddAsync(Feature entity);
+    Task UpdateAsync(Feature entity);
+    Task DeleteAsync(Feature entity);
     Task SaveChangesAsync();
 }

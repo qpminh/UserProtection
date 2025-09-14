@@ -7,32 +7,31 @@ namespace UserProtection.Infrastructure.Repositories.Payment;
 public class PlanRepository : IPlanRepository
 {
     private readonly UserProtectionContext _context;
+    public PlanRepository(UserProtectionContext context) => _context = context;
 
-    public PlanRepository(UserProtectionContext context)
-    {
-        _context = context;
-    }
+    public async Task<IEnumerable<Plan>> GetActivePlansAsync() =>
+        await _context.Plans.Where(p => p.IsActive)
+            .Include(p => p.PlanCourses).ThenInclude(pc => pc.Course)
+            .Include(p => p.PlanFeatures).ThenInclude(pf => pf.Feature).ToListAsync();
 
-    public async Task<IEnumerable<Plan>> GetAllPlansAsync()
-    {
-        return await _context.Plans
-            .Where(p => p.IsActive)
-            .ToListAsync();
-    }
+    public async Task<IEnumerable<Plan>> GetAllPlansAsync() =>
+    await _context.Plans
+        .Include(p => p.PlanCourses).ThenInclude(pc => pc.Course)
+        .Include(p => p.PlanFeatures).ThenInclude(pf => pf.Feature).ToListAsync();
 
-    public async Task<Plan?> GetPlanWithCoursesAsync(int planId)
-    {
-        return await _context.Plans
-            .Include(p => p.PlanCourses)
-                .ThenInclude(pc => pc.Course)
+    public async Task<Plan?> GetPlanWithCoursesAsync(int planId) =>
+        await _context.Plans
+            .Include(p => p.PlanCourses).ThenInclude(pc => pc.Course)
             .FirstOrDefaultAsync(p => p.PlanId == planId && p.IsActive);
-    }
 
-    public async Task<Plan?> GetPlanWithFeaturesAsync(int planId)
-    {
-        return await _context.Plans
-            .Include(p => p.PlanFeatures)
-                .ThenInclude(pf => pf.Feature)
+    public async Task<Plan?> GetPlanWithFeaturesAsync(int planId) =>
+        await _context.Plans
+            .Include(p => p.PlanFeatures).ThenInclude(pf => pf.Feature)
             .FirstOrDefaultAsync(p => p.PlanId == planId && p.IsActive);
-    }
+
+    public async Task<Plan?> GetPlanDetailsAsync(int planId) =>
+        await _context.Plans
+            .Include(p => p.PlanCourses).ThenInclude(pc => pc.Course)
+            .Include(p => p.PlanFeatures).ThenInclude(pf => pf.Feature)
+            .FirstOrDefaultAsync(p => p.PlanId == planId && p.IsActive);
 }

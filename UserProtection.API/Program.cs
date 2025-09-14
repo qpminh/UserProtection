@@ -77,7 +77,8 @@ namespace UserProtection.API
                 return new VnPayHelper(
                     config["TmnCode"]!,
                     config["HashSecret"]!,
-                    config["VnpUrl"]!
+                    config["VnpUrl"]!,
+                    config["ReturnUrl"]! 
                 );
             });
 
@@ -113,10 +114,12 @@ namespace UserProtection.API
                 var services = scope.ServiceProvider;
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var context = services.GetRequiredService<UserProtectionContext>();
 
                 await DbInitializer.SeedDefaultAdminAsync(services);
                 await RoleSeeder.SeedRolesAsync(roleManager, logger);
                 await UserSeeder.SeedUsersAsync(services);
+                await PlanSeeder.SeedAsync(context);
             }
 
             // Middleware

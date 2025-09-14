@@ -10,15 +10,19 @@ public class VnPayHelper
     private readonly string _tmnCode;
     private readonly string _hashSecret;
     private readonly string _vnpUrl;
+    private readonly string _callbackUrl; 
 
-    public VnPayHelper(string tmnCode, string hashSecret, string vnpUrl)
+    public string CallbackUrl => _callbackUrl;
+
+    public VnPayHelper(string tmnCode, string hashSecret, string vnpUrl, string callbackUrl)
     {
         _tmnCode = tmnCode;
         _hashSecret = hashSecret;
         _vnpUrl = vnpUrl;
+        _callbackUrl = callbackUrl;
     }
 
-    public string CreatePaymentUrl(string transactionId, int subscriptionId, decimal amount, string returnUrl)
+    public string CreatePaymentUrl(string transactionId, int subscriptionId, decimal amount)
     {
         var vnpParams = new SortedList<string, string>
         {
@@ -30,19 +34,13 @@ public class VnPayHelper
             ["vnp_CurrCode"] = "VND",
             ["vnp_IpAddr"] = "127.0.0.1",
             ["vnp_Locale"] = "vn",
-            ["vnp_OrderInfo"] = $"Thanh toan subscription {subscriptionId}",
+            ["vnp_OrderInfo"] = $"SubId={subscriptionId}", 
             ["vnp_OrderType"] = "other",
-            ["vnp_ReturnUrl"] = returnUrl,
+            ["vnp_ReturnUrl"] = _callbackUrl, 
             ["vnp_TxnRef"] = transactionId
         };
 
-        var data = new List<string>();
-        foreach (var kvp in vnpParams)
-        {
-            data.Add($"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}");
-        }
-
-        var rawData = string.Join("&", data);
+        var rawData = string.Join("&", vnpParams.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
         var secureHash = HmacSHA512(_hashSecret, rawData);
 
         return $"{_vnpUrl}?{rawData}&vnp_SecureHash={secureHash}";
@@ -52,11 +50,10 @@ public class VnPayHelper
     {
         var sorted = query
             .Where(kvp => kvp.Key != "vnp_SecureHash" && kvp.Key != "vnp_SecureHashType")
+            .OrderBy(kvp => kvp.Key)
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString());
 
-        var rawData = string.Join("&", sorted.OrderBy(k => k.Key)
-            .Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
-
+        var rawData = string.Join("&", sorted.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
         var checkHash = HmacSHA512(_hashSecret, rawData);
         var receivedHash = query["vnp_SecureHash"].ToString();
         return checkHash.Equals(receivedHash, StringComparison.OrdinalIgnoreCase);
@@ -65,7 +62,7 @@ public class VnPayHelper
     private string HmacSHA512(string key, string inputData)
     {
         using var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(key));
-        var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(inputData));
-        return BitConverter.ToString(hash).Replace("-", "").ToLower();
+        return BitConverter.ToString(hmac.ComputeHash(Encoding.UTF8.GetBytes(inputData)))
+            .Replace("-", "").ToLower();
     }
 }

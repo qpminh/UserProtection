@@ -12,8 +12,6 @@ public partial class Plan
 
     public string BillingCycle { get; set; } = null!;
 
-    public string? Features { get; set; }
-
     public bool IsActive { get; set; }
 
     public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();

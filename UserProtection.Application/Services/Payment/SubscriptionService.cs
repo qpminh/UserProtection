@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using UserProtection.Application.Dtos;
+using UserProtection.Application.DTOs;
+using UserProtection.Domain.Constants;
 using UserProtection.Domain.Entities;
+using UserProtection.Infrastructure.Helpers;
 using UserProtection.Infrastructure.Interfaces;
 
 namespace UserProtection.Application.Services.Payment;
@@ -18,7 +21,15 @@ public class SubscriptionService
 
     public async Task<SubscriptionDto> CreateSubscriptionAsync(CreateSubscriptionRequest request)
     {
-        var sub = _mapper.Map<Subscription>(request);
+        var sub = new Subscription
+        {
+            PlanId = request.PlanId,
+            UserId = request.UserId,
+            Status = SubscriptionStatus.Pending,
+            StartDate = DateTime.UtcNow,
+            AutoRenew = false
+        };
+
         await _subRepo.AddAsync(sub);
         await _subRepo.SaveChangesAsync();
 

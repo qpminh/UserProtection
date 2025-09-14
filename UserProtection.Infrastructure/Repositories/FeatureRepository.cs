@@ -9,10 +9,27 @@ public class FeatureRepository : IFeatureRepository
     private readonly UserProtectionContext _context;
     public FeatureRepository(UserProtectionContext context) => _context = context;
 
-    public async Task<IEnumerable<Feature>> GetAllAsync() => await _context.Features.ToListAsync();
-    public async Task<Feature?> GetByIdAsync(int id) => await _context.Features.FindAsync(id);
-    public async Task<Feature> AddAsync(Feature feature) { await _context.Features.AddAsync(feature); return feature; }
-    public async Task UpdateAsync(Feature feature) { _context.Features.Update(feature); }
-    public async Task DeleteAsync(Feature feature) { _context.Features.Remove(feature); }
-    public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+    public async Task<IEnumerable<Feature>> GetAllAsync() =>
+        await _context.Features.ToListAsync();
+
+    public async Task<Feature?> GetByIdAsync(int id) =>
+        await _context.Features.FindAsync(id);
+
+    public async Task AddAsync(Feature entity) =>
+        await _context.Features.AddAsync(entity);
+
+    public Task UpdateAsync(Feature entity)
+    {
+        _context.Features.Update(entity);
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(Feature entity)
+    {
+        _context.Features.Remove(entity);
+        return Task.CompletedTask;
+    }
+
+    public async Task SaveChangesAsync() =>
+        await _context.SaveChangesAsync();
 }

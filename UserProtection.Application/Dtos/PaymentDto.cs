@@ -3,7 +3,6 @@
 public class PaymentRequestDto
 {
     public int SubscriptionId { get; set; }
-    public decimal Amount { get; set; }
     public string ReturnUrl { get; set; } = null!;
 }
 

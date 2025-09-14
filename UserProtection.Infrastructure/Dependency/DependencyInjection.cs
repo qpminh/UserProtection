@@ -28,6 +28,8 @@ namespace UserProtection.Infrastructure.Dependency
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IFeatureRepository, FeatureRepository>();
             services.AddScoped<IPlanFeatureRepository, PlanFeatureRepository>();
+            services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<IPlanCourseRepository, PlanCourseRepository>();
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             services.AddScoped<ITrustedLinkRepository, TrustedLinkRepository>();
             services.AddScoped<ISuspiciousLinkRepository, SuspiciousLinkRepository>();

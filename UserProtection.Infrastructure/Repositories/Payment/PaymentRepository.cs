@@ -7,27 +7,16 @@ namespace UserProtection.Infrastructure.Repositories.Payment;
 public class PaymentRepository : IPaymentRepository
 {
     private readonly UserProtectionContext _context;
+    public PaymentRepository(UserProtectionContext context) => _context = context;
 
-    public PaymentRepository(UserProtectionContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<UserProtection.Domain.Entities.Payment> AddAsync(UserProtection.Domain.Entities.Payment payment)
-    {
+    public async Task AddAsync(Domain.Entities.Payment payment) =>
         await _context.Payments.AddAsync(payment);
-        return payment;
-    }
 
-    public async Task<UserProtection.Domain.Entities.Payment?> GetByTransactionIdAsync(string transactionId)
-    {
-        return await _context.Payments
-            .Include(p => p.Subscription) // để load Subscription luôn (dùng cho HandleCallback)
+    public async Task<Domain.Entities.Payment?> GetByTransactionIdAsync(string transactionId) =>
+        await _context.Payments
+            .Include(p => p.Subscription).ThenInclude(s => s.Plan) // cần Plan để tính EndDate
             .FirstOrDefaultAsync(p => p.TransactionId == transactionId);
-    }
 
-    public async Task SaveChangesAsync()
-    {
+    public async Task SaveChangesAsync() =>
         await _context.SaveChangesAsync();
-    }
 }

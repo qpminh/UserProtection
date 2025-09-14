@@ -21,12 +21,16 @@ namespace UserProtection.Application.Map
             CreateMap<Feature, FeatureDto>().ReverseMap();
             CreateMap<CreateFeatureRequest, Feature>();
 
+            // Course
+            CreateMap<Course, CourseDto>().ReverseMap();
+            CreateMap<CreateCourseRequest, Course>();
+
             // Plan
             CreateMap<Plan, PlanDto>()
                 .ForMember(dest => dest.Courses,
-                           opt => opt.MapFrom(src => src.PlanCourses.Select(pc => pc.Course.Title)))
+                    opt => opt.MapFrom(src => src.PlanCourses.Select(pc => pc.Course)))
                 .ForMember(dest => dest.Features,
-                           opt => opt.MapFrom(src => src.PlanFeatures.Select(pf => pf.Feature.Name)));
+                    opt => opt.MapFrom(src => src.PlanFeatures.Select(pf => pf.Feature)));
             CreateMap<CreatePlanRequest, Plan>();
 
             // Subscription

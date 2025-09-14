@@ -18,30 +18,28 @@ public class PaymentController : ControllerBase
         _vnPayHelper = vnPayHelper;
     }
 
-    // ✅ API khởi tạo thanh toán
     [HttpPost("create")]
     public async Task<IActionResult> CreatePayment([FromBody] PaymentRequestDto request)
     {
-        if (request == null || request.Amount <= 0)
+        if (request == null || request.SubscriptionId <= 0)
             return BadRequest(new { Message = "Invalid request" });
 
         var response = await _paymentService.CreatePaymentAsync(request);
-
-        return Ok(response); // response sẽ chứa PaymentUrl để client redirect
+        return Ok(response); 
     }
 
-    // ✅ Callback từ VNPay
     [HttpGet("callback")]
     public async Task<IActionResult> Callback()
     {
         var query = Request.Query;
-
         if (!_vnPayHelper.ValidateSignature(query))
             return BadRequest(new { Message = "Invalid signature" });
 
-        // lấy SubscriptionId từ OrderInfo
         var orderInfo = query["vnp_OrderInfo"].ToString();
-        var subscriptionId = int.Parse(orderInfo.Split(' ').Last());
+        if (!orderInfo.StartsWith("SubId="))
+            return BadRequest(new { Message = "Invalid OrderInfo format" });
+
+        var subscriptionId = int.Parse(orderInfo.Replace("SubId=", ""));
 
         var callback = new PaymentCallbackDto
         {
@@ -50,7 +48,8 @@ public class PaymentController : ControllerBase
             SubscriptionId = subscriptionId
         };
 
-        await _paymentService.HandleCallbackAsync(callback);
+        var success = await _paymentService.HandleCallbackAsync(callback);
+        if (!success) return NotFound(new { Message = "Payment or subscription not found" });
 
         return Ok(new
         {

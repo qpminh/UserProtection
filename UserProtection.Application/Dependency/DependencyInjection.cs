@@ -26,6 +26,8 @@ namespace UserProtection.Application.Dependency
             services.AddScoped<PaymentService>();
             services.AddScoped<FeatureService>();
             services.AddScoped<PlanFeatureService>();
+            services.AddScoped<CourseService>();
+            services.AddScoped<PlanCourseService>();
             services.AddScoped<ITrustedLinkService, TrustedLinkService>();
             services.AddScoped<ISuspiciousLinkService, SuspiciousLinkService>();
 

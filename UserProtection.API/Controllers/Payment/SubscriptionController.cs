@@ -10,16 +10,13 @@ namespace UserProtection.API.Controllers.Payment;
 public class SubscriptionController : ControllerBase
 {
     private readonly SubscriptionService _subService;
-
-    public SubscriptionController(SubscriptionService subService)
-    {
-        _subService = subService;
-    }
+    public SubscriptionController(SubscriptionService subService) => _subService = subService;
 
     [HttpPost]
     public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         var sub = await _subService.CreateSubscriptionAsync(request);
-        return Ok(new { sub.SubscriptionId, sub.Status, sub.StartDate });
+        return CreatedAtAction(nameof(CreateSubscription), new { id = sub.SubscriptionId }, sub);
     }
 }

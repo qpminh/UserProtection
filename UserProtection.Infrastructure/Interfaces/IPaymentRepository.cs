@@ -4,7 +4,7 @@ namespace UserProtection.Infrastructure.Interfaces;
 
 public interface IPaymentRepository
 {
-    Task<Payment> AddAsync(Payment payment);
-    Task<Payment?> GetByTransactionIdAsync(string transactionId);
+    Task AddAsync(Domain.Entities.Payment payment);
+    Task<Domain.Entities.Payment?> GetByTransactionIdAsync(string transactionId);
     Task SaveChangesAsync();
 }

@@ -6,10 +6,10 @@ namespace UserProtection.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FeatureController : ControllerBase
+public class CourseController : ControllerBase
 {
-    private readonly FeatureService _service;
-    public FeatureController(FeatureService service) => _service = service;
+    private readonly CourseService _service;
+    public CourseController(CourseService service) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
@@ -17,20 +17,20 @@ public class FeatureController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var feature = await _service.GetByIdAsync(id);
-        return feature is null ? NotFound(new { Message = "Feature not found" }) : Ok(feature);
+        var course = await _service.GetByIdAsync(id);
+        return course is null ? NotFound(new { Message = "Course not found" }) : Ok(course);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateFeatureRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var f = await _service.CreateAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = f.FeatureId }, f);
+        var c = await _service.CreateAsync(request);
+        return CreatedAtAction(nameof(GetById), new { id = c.CourseId }, c);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CreateFeatureRequest request)
+    public async Task<IActionResult> Update(int id, [FromBody] CreateCourseRequest request)
     {
         await _service.UpdateAsync(id, request);
         return NoContent();

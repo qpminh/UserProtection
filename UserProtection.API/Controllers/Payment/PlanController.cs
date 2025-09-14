@@ -1,39 +1,41 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Services.Payment;
 
-namespace UserProtection.API.Controllers.Payment;
+namespace UserProtection.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class PlanController : ControllerBase
 {
     private readonly PlanService _planService;
+    public PlanController(PlanService planService) => _planService = planService;
 
-    public PlanController(PlanService planService)
+    [HttpGet("active")]
+    public async Task<IActionResult> GetActivePlans()
+        => Ok(await _planService.GetActivePlansAsync());
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllPlans()
+        => Ok(await _planService.GetAllPlansAsync());
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetPlanDetails(int id)
     {
-        _planService = planService;
+        var plan = await _planService.GetPlanDetailsAsync(id);
+        return plan is null ? NotFound(new { Message = "Plan not found" }) : Ok(plan);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetPlans()
-    {
-        var plans = await _planService.GetAllPlansAsync();
-        return Ok(plans);
-    }
-
-    [HttpGet("{id}/courses")]
+    [HttpGet("{id:int}/courses")]
     public async Task<IActionResult> GetPlanCourses(int id)
     {
         var plan = await _planService.GetPlanWithCoursesAsync(id);
-        if (plan == null) return NotFound();
-        return Ok(plan);
+        return plan is null ? NotFound(new { Message = "Plan not found" }) : Ok(plan);
     }
 
-    [HttpGet("{id}/features")]
+    [HttpGet("{id:int}/features")]
     public async Task<IActionResult> GetPlanFeatures(int id)
     {
         var plan = await _planService.GetPlanWithFeaturesAsync(id);
-        if (plan == null) return NotFound();
-        return Ok(plan);
+        return plan is null ? NotFound(new { Message = "Plan not found" }) : Ok(plan);
     }
 }

@@ -7,26 +7,16 @@ namespace UserProtection.Infrastructure.Repositories.Payment;
 public class SubscriptionRepository : ISubscriptionRepository
 {
     private readonly UserProtectionContext _context;
+    public SubscriptionRepository(UserProtectionContext context) => _context = context;
 
-    public SubscriptionRepository(UserProtectionContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<Subscription> AddAsync(Subscription subscription)
-    {
+    public async Task AddAsync(Subscription subscription) =>
         await _context.Subscriptions.AddAsync(subscription);
-        return subscription;
-    }
 
-    public async Task<Subscription?> GetByIdAsync(int id) 
-    {
-        return await _context.Subscriptions
+    public async Task<Subscription?> GetByIdAsync(int id) =>
+        await _context.Subscriptions
+            .Include(s => s.Plan) // include Plan để tính EndDate
             .FirstOrDefaultAsync(s => s.SubscriptionId == id);
-    }
 
-    public async Task SaveChangesAsync()
-    {
+    public async Task SaveChangesAsync() =>
         await _context.SaveChangesAsync();
-    }
 }
