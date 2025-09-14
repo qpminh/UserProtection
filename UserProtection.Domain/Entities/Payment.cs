@@ -15,6 +15,7 @@ public partial class Payment
     public string? TransactionId { get; set; }
 
     public string Status { get; set; } = null!;
+    public string? FrontendReturnUrl { get; set; }
 
     public virtual Subscription Subscription { get; set; } = null!;
 }

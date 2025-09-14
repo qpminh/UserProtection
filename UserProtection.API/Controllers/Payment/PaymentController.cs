@@ -40,7 +40,6 @@ public class PaymentController : ControllerBase
             return BadRequest(new { Message = "Invalid OrderInfo format" });
 
         var subscriptionId = int.Parse(orderInfo.Replace("SubId=", ""));
-
         var callback = new PaymentCallbackDto
         {
             TransactionId = query["vnp_TxnRef"].ToString(),
@@ -51,13 +50,9 @@ public class PaymentController : ControllerBase
         var success = await _paymentService.HandleCallbackAsync(callback);
         if (!success) return NotFound(new { Message = "Payment or subscription not found" });
 
-        return Ok(new
-        {
-            Message = "Payment processed",
-            callback.Status,
-            callback.SubscriptionId,
-            callback.TransactionId,
-            ResponseCode = query["vnp_ResponseCode"].ToString()
-        });
+        var payment = await _paymentService.GetByTransactionIdAsync(callback.TransactionId);
+        var feUrl = payment?.FrontendReturnUrl ?? "https://myfrontend.com/payment/result";
+
+        return Redirect($"{feUrl}?status={callback.Status}&subscriptionId={callback.SubscriptionId}&txnId={callback.TransactionId}");
     }
 }

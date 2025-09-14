@@ -35,7 +35,8 @@ public class PaymentService
             PaymentMethod = "VNPay",
             Status = PaymentStatus.Pending,
             PaymentDate = DateTime.UtcNow,
-            TransactionId = transactionId
+            TransactionId = transactionId,
+            FrontendReturnUrl = request.ReturnUrl
         };
 
         await _paymentRepo.AddAsync(payment);
@@ -76,5 +77,10 @@ public class PaymentService
 
         await _paymentRepo.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<Domain.Entities.Payment?> GetByTransactionIdAsync(string txnId)
+    {
+        return await _paymentRepo.GetByTransactionIdAsync(txnId);
     }
 }

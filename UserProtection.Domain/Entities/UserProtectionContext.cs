@@ -415,6 +415,10 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .HasDefaultValue("Completed");
             entity.Property(e => e.TransactionId).HasMaxLength(255);
 
+            entity.Property(e => e.FrontendReturnUrl)
+                .HasMaxLength(500)  
+                .IsUnicode(false);  
+
             entity.HasOne(d => d.Subscription).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.SubscriptionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
