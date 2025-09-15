@@ -27,4 +27,6 @@ public partial class Subscription
     public virtual ICollection<TenantUserAccess> TenantUserAccesses { get; set; } = new List<TenantUserAccess>();
 
     public virtual User? User { get; set; }
+
+    public virtual ICollection<SubscriptionKey> SubscriptionKeys { get; set; } = new List<SubscriptionKey>();
 }

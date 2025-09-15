@@ -6,7 +6,10 @@ using UserProtection.Infrastructure.Interfaces;
 using UserProtection.Infrastructure.Repositories.Core;
 using UserProtection.Infrastructure.Repositories.Security;
 using UserProtection.Infrastructure.Repositories.Payment;
-using UserProtection.Infrastructure.Repositories;
+using UserProtection.Infrastructure.Repositories.Subscription;
+using UserProtection.Infrastructure.Repositories.Plan;
+using UserProtection.Infrastructure.Repositories.Course;
+using UserProtection.Infrastructure.Repositories.Feature;
 
 namespace UserProtection.Infrastructure.Dependency
 {
@@ -25,6 +28,7 @@ namespace UserProtection.Infrastructure.Dependency
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPlanRepository, PlanRepository>();
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<ISubscriptionKeyRepository, SubscriptionKeyRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IFeatureRepository, FeatureRepository>();
             services.AddScoped<IPlanFeatureRepository, PlanFeatureRepository>();

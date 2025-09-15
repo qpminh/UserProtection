@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using UserProtection.Application.DTOs;
+using UserProtection.Application.Dtos.Payment;
+using UserProtection.Application.Services.Subscription;
 using UserProtection.Domain.Constants;
 using UserProtection.Infrastructure.Helpers;
 using UserProtection.Infrastructure.Interfaces;
@@ -10,12 +11,18 @@ public class PaymentService
 {
     private readonly IPaymentRepository _paymentRepo;
     private readonly ISubscriptionRepository _subRepo;
+    private readonly SubscriptionKeyService _keyService;
     private readonly VnPayHelper _vnPay;
 
-    public PaymentService(IPaymentRepository paymentRepo, ISubscriptionRepository subRepo, VnPayHelper vnPay)
+    public PaymentService(
+        IPaymentRepository paymentRepo,
+        ISubscriptionRepository subRepo,
+        SubscriptionKeyService keyService,
+        VnPayHelper vnPay)
     {
         _paymentRepo = paymentRepo;
         _subRepo = subRepo;
+        _keyService = keyService;
         _vnPay = vnPay;
     }
 
@@ -47,13 +54,15 @@ public class PaymentService
         return new PaymentResponseDto { PaymentUrl = paymentUrl };
     }
 
-    public async Task<bool> HandleCallbackAsync(PaymentCallbackDto callback)
+    public async Task<PaymentResultDto?> HandleCallbackAsync(PaymentCallbackDto callback)
     {
         var payment = await _paymentRepo.GetByTransactionIdAsync(callback.TransactionId);
-        if (payment == null) return false;
+        if (payment == null) return null;
 
         var subscription = payment.Subscription;
-        if (subscription == null) return false;
+        if (subscription == null) return null;
+
+        string? apiKey = null;
 
         if (callback.Status == "Success")
         {
@@ -61,13 +70,14 @@ public class PaymentService
             subscription.Status = SubscriptionStatus.Active;
             subscription.StartDate = DateTime.UtcNow;
 
-            // Tính EndDate theo BillingCycle
             subscription.EndDate = subscription.Plan.BillingCycle.ToLower() switch
             {
                 "monthly" => subscription.StartDate.AddMonths(1),
                 "yearly" => subscription.StartDate.AddYears(1),
-                _ => subscription.StartDate.AddMonths(1) // default: monthly
+                _ => subscription.StartDate.AddMonths(1)
             };
+
+            apiKey = await _keyService.GenerateKeyAsync(subscription.SubscriptionId, deactivateOld: true);
         }
         else
         {
@@ -76,7 +86,14 @@ public class PaymentService
         }
 
         await _paymentRepo.SaveChangesAsync();
-        return true;
+
+        return new PaymentResultDto
+        {
+            TransactionId = callback.TransactionId,
+            SubscriptionId = subscription.SubscriptionId,
+            Status = callback.Status,
+            ApiKey = apiKey
+        };
     }
 
     public async Task<Domain.Entities.Payment?> GetByTransactionIdAsync(string txnId)

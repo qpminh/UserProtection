@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.DTOs;
+using UserProtection.Application.Dtos.Payment;
 using UserProtection.Application.Services.Payment;
 using UserProtection.Infrastructure.Helpers;
 
@@ -47,12 +47,13 @@ public class PaymentController : ControllerBase
             SubscriptionId = subscriptionId
         };
 
-        var success = await _paymentService.HandleCallbackAsync(callback);
-        if (!success) return NotFound(new { Message = "Payment or subscription not found" });
+        var result = await _paymentService.HandleCallbackAsync(callback);
+        if (result == null)
+            return NotFound(new { Message = "Payment or subscription not found" });
 
         var payment = await _paymentService.GetByTransactionIdAsync(callback.TransactionId);
         var feUrl = payment?.FrontendReturnUrl ?? "https://myfrontend.com/payment/result";
 
-        return Redirect($"{feUrl}?status={callback.Status}&subscriptionId={callback.SubscriptionId}&txnId={callback.TransactionId}");
+        return Redirect($"{feUrl}?status={result.Status}&subscriptionId={result.SubscriptionId}&txnId={result.TransactionId}&apiKey={result.ApiKey}");
     }
 }

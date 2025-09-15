@@ -10,4 +10,7 @@ public interface ICourseRepository
     Task UpdateAsync(Course entity);
     Task DeleteAsync(Course entity);
     Task SaveChangesAsync();
+
+    //Task<IEnumerable<Course>> GetByTenantAsync(int tenantId);
+    //Task DeleteAsync(int id);
 }

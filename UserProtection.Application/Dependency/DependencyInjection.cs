@@ -4,7 +4,10 @@ using UserProtection.Application.Map;
 using UserProtection.Application.Services.Core;
 using UserProtection.Application.Services.Security;
 using UserProtection.Application.Services.Payment;
-using UserProtection.Application.Services;
+using UserProtection.Application.Services.Course;
+using UserProtection.Application.Services.Feature;
+using UserProtection.Application.Services.Plan;
+using UserProtection.Application.Services.Subscription;
 
 namespace UserProtection.Application.Dependency
 {
@@ -23,6 +26,7 @@ namespace UserProtection.Application.Dependency
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<PlanService>();
             services.AddScoped<SubscriptionService>();
+            services.AddScoped<SubscriptionKeyService>();
             services.AddScoped<PaymentService>();
             services.AddScoped<FeatureService>();
             services.AddScoped<PlanFeatureService>();
@@ -30,6 +34,7 @@ namespace UserProtection.Application.Dependency
             services.AddScoped<PlanCourseService>();
             services.AddScoped<ITrustedLinkService, TrustedLinkService>();
             services.AddScoped<ISuspiciousLinkService, SuspiciousLinkService>();
+            services.AddScoped<AntiPhishingService>();
 
             return services;
         }

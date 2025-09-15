@@ -130,6 +130,7 @@ namespace UserProtection.API
             }
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseMiddleware<ApiKeyMiddleware>();
 
             app.UseHttpsRedirection();
 

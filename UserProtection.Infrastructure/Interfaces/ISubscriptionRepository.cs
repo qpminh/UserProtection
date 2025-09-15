@@ -7,4 +7,4 @@ public interface ISubscriptionRepository
     Task AddAsync(Subscription subscription);
     Task<Subscription?> GetByIdAsync(int id);
     Task SaveChangesAsync();
-}
+}   

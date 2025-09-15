@@ -43,6 +43,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
     public virtual DbSet<Plan> Plans { get; set; }
 
     public virtual DbSet<Subscription> Subscriptions { get; set; }
+    public virtual DbSet<SubscriptionKey> SubscriptionKeys { get; set; }
 
     public virtual DbSet<SuspiciousLink> SuspiciousLinks { get; set; }
 
@@ -470,6 +471,31 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.HasOne(d => d.User).WithMany(p => p.Subscriptions)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_Subscriptions_User");
+        });
+
+        modelBuilder.Entity<SubscriptionKey>(entity =>
+        {
+            entity.HasKey(e => e.KeyId).HasName("PK_SubscriptionKeys");
+
+            entity.ToTable("SubscriptionKeys", "billing");
+
+            entity.HasIndex(e => e.KeyValue).IsUnique();
+
+            entity.Property(e => e.KeyValue)
+                .IsRequired()
+                .HasMaxLength(200); 
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasOne(d => d.Subscription)
+                .WithMany(p => p.SubscriptionKeys)
+                .HasForeignKey(d => d.SubscriptionId)
+                .OnDelete(DeleteBehavior.Cascade) 
+                .HasConstraintName("FK_SubscriptionKeys_Subscriptions");
         });
 
         modelBuilder.Entity<SuspiciousLink>(entity =>

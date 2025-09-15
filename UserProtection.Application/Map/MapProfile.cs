@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
-using UserProtection.Application.Dtos;
 using UserProtection.Application.Dtos.Core;
+using UserProtection.Application.Dtos.Course;
+using UserProtection.Application.Dtos.Feature;
+using UserProtection.Application.Dtos.Plan;
 using UserProtection.Application.Dtos.Security;
+using UserProtection.Application.Dtos.Subscription;
 using UserProtection.Domain.Entities;
 
 namespace UserProtection.Application.Map

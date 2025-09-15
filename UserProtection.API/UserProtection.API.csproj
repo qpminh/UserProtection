@@ -15,8 +15,4 @@
     <ProjectReference Include="..\UserProtection.Application\UserProtection.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\Course\" />
-  </ItemGroup>
-
 </Project>
