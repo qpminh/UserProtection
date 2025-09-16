@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.Dtos.Core;
+using UserProtection.Application.Dtos.Cores;
 using UserProtection.Application.Interfaces.Cores;
 using UserProtection.Domain.Entities;
 

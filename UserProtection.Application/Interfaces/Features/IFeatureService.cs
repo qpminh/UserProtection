@@ -1,4 +1,4 @@
-﻿using UserProtection.Application.Dtos.Feature;
+﻿using UserProtection.Application.Dtos.Features;
 
 namespace UserProtection.Application.Interfaces.Features
 {

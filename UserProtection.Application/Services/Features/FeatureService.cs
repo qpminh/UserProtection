@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using UserProtection.Application.Dtos.Feature;
+using UserProtection.Application.Dtos.Features;
 using UserProtection.Application.Interfaces.Features;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces.Features;

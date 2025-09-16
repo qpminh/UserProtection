@@ -1,4 +1,4 @@
-﻿using UserProtection.Application.Dtos.Course;
+﻿using UserProtection.Application.Dtos.Courses;
 
 namespace UserProtection.Application.Interfaces.Courses
 {

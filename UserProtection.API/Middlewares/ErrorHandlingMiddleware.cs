@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
-using UserProtection.Application.Dtos.Core;
+using UserProtection.Application.Dtos.Cores;
 
 namespace UserProtection.API.Middlewares
 {

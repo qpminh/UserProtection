@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UserProtection.Application.Dtos.Course;
+using UserProtection.Application.Dtos.Courses;
 using UserProtection.Application.Interfaces.Courses;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces.Courses;

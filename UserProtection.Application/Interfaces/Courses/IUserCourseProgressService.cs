@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UserProtection.Application.Dtos.Course;
+﻿using UserProtection.Application.Dtos.Courses;
 
 namespace UserProtection.Application.Interfaces.Courses
 {

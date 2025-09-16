@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.Dtos.Feature;
+using UserProtection.Application.Dtos.Features;
 using UserProtection.Application.Interfaces.Features;
 
 namespace UserProtection.API.Controllers.Features

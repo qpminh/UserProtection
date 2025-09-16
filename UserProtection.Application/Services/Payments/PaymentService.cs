@@ -1,4 +1,4 @@
-﻿using UserProtection.Application.Dtos.Payment;
+﻿using UserProtection.Application.Dtos.Payments;
 using UserProtection.Application.Interfaces.Payments;
 using UserProtection.Application.Services.Subscriptions;
 using UserProtection.Domain.Constants;

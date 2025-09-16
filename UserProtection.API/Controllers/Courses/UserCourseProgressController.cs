@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.Dtos.Course;
+using UserProtection.Application.Dtos.Courses;
 using UserProtection.Application.Interfaces.Courses;
 
 namespace UserProtection.API.Controllers.Courses

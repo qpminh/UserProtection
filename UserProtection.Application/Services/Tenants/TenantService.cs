@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using UserProtection.Application.Dtos.Tenant;
+using UserProtection.Application.Dtos.Tenants;
 using UserProtection.Application.Interfaces.Tenants;
 using UserProtection.Infrastructure.Interfaces.Tenants;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.Dtos.Payment;
+using UserProtection.Application.Dtos.Payments;
 using UserProtection.Application.Interfaces.Payments;
 using UserProtection.Infrastructure.Helpers;
 

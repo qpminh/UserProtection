@@ -1,4 +1,4 @@
-﻿using UserProtection.Application.Dtos.Subscription;
+﻿using UserProtection.Application.Dtos.Subscriptions;
 
 namespace UserProtection.Application.Interfaces.Subscriptions
 {

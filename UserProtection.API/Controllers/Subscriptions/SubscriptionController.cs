@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.Dtos.Subscription;
+using UserProtection.Application.Dtos.Subscriptions;
 using UserProtection.Application.Interfaces.Subscriptions;
 
 namespace UserProtection.API.Controllers.Subscriptions

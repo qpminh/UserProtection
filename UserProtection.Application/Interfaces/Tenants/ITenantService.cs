@@ -1,4 +1,4 @@
-﻿using UserProtection.Application.Dtos.Tenant;
+﻿using UserProtection.Application.Dtos.Tenants;
 
 namespace UserProtection.Application.Interfaces.Tenants
 {

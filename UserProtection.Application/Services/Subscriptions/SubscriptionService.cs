@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using UserProtection.Application.Dtos.Subscription;
+using UserProtection.Application.Dtos.Subscriptions;
 using UserProtection.Application.Interfaces.Subscriptions;
 using UserProtection.Domain.Constants;
 using UserProtection.Domain.Entities;

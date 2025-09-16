@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using UserProtection.Application.Dtos.Core;
+using UserProtection.Application.Dtos.Cores;
 using UserProtection.Application.Interfaces.Cores;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces.Core;

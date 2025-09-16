@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using UserProtection.Application.Dtos.Core;
+using UserProtection.Application.Dtos.Cores;
 using UserProtection.Domain.Entities;
 
 namespace UserProtection.Application.Interfaces.Cores

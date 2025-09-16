@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using UserProtection.Application.Dtos.Course;
+using UserProtection.Application.Dtos.Courses;
 using UserProtection.Application.Interfaces.Courses;
 using UserProtection.Infrastructure.Interfaces.Courses;
 

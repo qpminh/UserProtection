@@ -1,4 +1,4 @@
-﻿using UserProtection.Application.Dtos.Plan;
+﻿using UserProtection.Application.Dtos.Plans;
 
 namespace UserProtection.Application.Interfaces.Plans
 {

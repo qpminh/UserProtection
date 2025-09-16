@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.Dtos.Tenant;
+using UserProtection.Application.Dtos.Tenants;
 using UserProtection.Application.Interfaces.Tenants;
 
 namespace UserProtection.API.Controllers.Tenants

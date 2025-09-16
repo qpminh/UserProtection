@@ -1,4 +1,4 @@
-﻿using UserProtection.Application.Dtos.Payment;
+﻿using UserProtection.Application.Dtos.Payments;
 using UserProtection.Domain.Entities;
 
 namespace UserProtection.Application.Interfaces.Payments

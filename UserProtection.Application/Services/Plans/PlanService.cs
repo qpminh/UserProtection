@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using UserProtection.Application.Dtos.Plan;
+using UserProtection.Application.Dtos.Plans;
 using UserProtection.Application.Interfaces.Plans;
 using UserProtection.Infrastructure.Interfaces.Plans;
 
