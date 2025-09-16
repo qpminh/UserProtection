@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UserProtection.Application.Dtos.Security;
-using UserProtection.Application.Interfaces;
+using UserProtection.Application.Interfaces.Security;
 using UserProtection.Domain.Entities;
-using UserProtection.Infrastructure.Interfaces;
+using UserProtection.Infrastructure.Interfaces.Core;
+using UserProtection.Infrastructure.Interfaces.Security;
 
 namespace UserProtection.Application.Services.Security
 {

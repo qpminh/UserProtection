@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserProtection.Application.Dtos.Security;
-using UserProtection.Application.Interfaces;
+using UserProtection.Application.Interfaces.Security;
 
 namespace UserProtection.API.Controllers.Security
 {

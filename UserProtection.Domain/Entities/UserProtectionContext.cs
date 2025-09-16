@@ -289,7 +289,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
         modelBuilder.Entity<PlanCourse>(entity =>
         {
-            entity.ToTable("PlanCourses", "billing"); 
+            entity.ToTable("PlanCourses", "billing");
 
             // composite key
             entity.HasKey(pc => new { pc.PlanId, pc.CourseId });
@@ -417,8 +417,8 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.Property(e => e.TransactionId).HasMaxLength(255);
 
             entity.Property(e => e.FrontendReturnUrl)
-                .HasMaxLength(500)  
-                .IsUnicode(false);  
+                .HasMaxLength(500)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Subscription).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.SubscriptionId)
@@ -483,7 +483,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.Property(e => e.KeyValue)
                 .IsRequired()
-                .HasMaxLength(200); 
+                .HasMaxLength(200);
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())");
@@ -494,7 +494,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.HasOne(d => d.Subscription)
                 .WithMany(p => p.SubscriptionKeys)
                 .HasForeignKey(d => d.SubscriptionId)
-                .OnDelete(DeleteBehavior.Cascade) 
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_SubscriptionKeys_Subscriptions");
         });
 

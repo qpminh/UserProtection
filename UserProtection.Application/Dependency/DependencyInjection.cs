@@ -1,13 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using UserProtection.Application.Interfaces;
-using UserProtection.Application.Map;
-using UserProtection.Application.Services.Core;
+using UserProtection.Application.Interfaces.Cores;
+using UserProtection.Application.Interfaces.Courses;
+using UserProtection.Application.Interfaces.Features;
+using UserProtection.Application.Interfaces.Payments;
+using UserProtection.Application.Interfaces.Plans;
+using UserProtection.Application.Interfaces.Security;
+using UserProtection.Application.Interfaces.Subscriptions;
+using UserProtection.Application.Interfaces.Tenants;
+using UserProtection.Application.Mappers;
+using UserProtection.Application.Services.Cores;
+using UserProtection.Application.Services.Courses;
+using UserProtection.Application.Services.Features;
+using UserProtection.Application.Services.Payments;
+using UserProtection.Application.Services.Plans;
 using UserProtection.Application.Services.Security;
-using UserProtection.Application.Services.Payment;
-using UserProtection.Application.Services.Course;
-using UserProtection.Application.Services.Feature;
-using UserProtection.Application.Services.Plan;
-using UserProtection.Application.Services.Subscription;
+using UserProtection.Application.Services.Subscriptions;
+using UserProtection.Application.Services.Tenants;
 
 namespace UserProtection.Application.Dependency
 {
@@ -23,18 +31,38 @@ namespace UserProtection.Application.Dependency
 
             services.AddAutoMapper(typeof(MapProfile).Assembly);
 
+            // Core
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<PlanService>();
-            services.AddScoped<SubscriptionService>();
-            services.AddScoped<SubscriptionKeyService>();
-            services.AddScoped<PaymentService>();
-            services.AddScoped<FeatureService>();
-            services.AddScoped<PlanFeatureService>();
-            services.AddScoped<CourseService>();
-            services.AddScoped<PlanCourseService>();
+
+            // Subscription
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<ISubscriptionKeyService, SubscriptionKeyService>();
+
+            // Payment
+            services.AddScoped<IPaymentService, PaymentService>();
+
+            // Feature
+            services.AddScoped<IFeatureService, FeatureService>();
+
+            // Plan
+            services.AddScoped<IPlanService, PlanService>();
+            services.AddScoped<IPlanFeatureService, PlanFeatureService>();
+            services.AddScoped<IPlanCourseService, PlanCourseService>();
+
+            // Course
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<ICourseReviewService, CourseReviewService>();
+            services.AddScoped<ICourseModuleService, CourseModuleService>();
+            services.AddScoped<IEnrollmentService, EnrollmentService>();
+
+            // Security
             services.AddScoped<ITrustedLinkService, TrustedLinkService>();
             services.AddScoped<ISuspiciousLinkService, SuspiciousLinkService>();
-            services.AddScoped<AntiPhishingService>();
+            services.AddScoped<IAntiPhishingService, AntiPhishingService>();
+
+            // Tenant
+            services.AddScoped<ITenantService, TenantService>();
+            services.AddScoped<ITenantUserAccessService, TenantUserAccessService>();
 
             return services;
         }

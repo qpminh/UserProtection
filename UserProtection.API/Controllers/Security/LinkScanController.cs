@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserProtection.API.Middlewares;
-using UserProtection.Application.Services.Security;
+using UserProtection.Application.Interfaces.Security;
 
 namespace UserProtection.API.Controllers.Security
 {
@@ -8,9 +8,9 @@ namespace UserProtection.API.Controllers.Security
     [Route("api/[controller]")]
     public class LinkScanController : ControllerBase
     {
-        private readonly AntiPhishingService _scanService;
+        private readonly IAntiPhishingService _scanService;
 
-        public LinkScanController(AntiPhishingService scanService)
+        public LinkScanController(IAntiPhishingService scanService)
         {
             _scanService = scanService;
         }

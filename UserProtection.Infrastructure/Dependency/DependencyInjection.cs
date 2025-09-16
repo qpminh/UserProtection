@@ -2,14 +2,22 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UserProtection.Domain.Entities;
-using UserProtection.Infrastructure.Interfaces;
-using UserProtection.Infrastructure.Repositories.Core;
+using UserProtection.Infrastructure.Interfaces.Core;
+using UserProtection.Infrastructure.Interfaces.Courses;
+using UserProtection.Infrastructure.Interfaces.Features;
+using UserProtection.Infrastructure.Interfaces.Payments;
+using UserProtection.Infrastructure.Interfaces.Plans;
+using UserProtection.Infrastructure.Interfaces.Security;
+using UserProtection.Infrastructure.Interfaces.Subscriptions;
+using UserProtection.Infrastructure.Interfaces.Tenants;
+using UserProtection.Infrastructure.Repositories.Cores;
+using UserProtection.Infrastructure.Repositories.Courses;
+using UserProtection.Infrastructure.Repositories.Features;
+using UserProtection.Infrastructure.Repositories.Payments;
+using UserProtection.Infrastructure.Repositories.Plans;
 using UserProtection.Infrastructure.Repositories.Security;
-using UserProtection.Infrastructure.Repositories.Payment;
-using UserProtection.Infrastructure.Repositories.Subscription;
-using UserProtection.Infrastructure.Repositories.Plan;
-using UserProtection.Infrastructure.Repositories.Course;
-using UserProtection.Infrastructure.Repositories.Feature;
+using UserProtection.Infrastructure.Repositories.Subscriptions;
+using UserProtection.Infrastructure.Repositories.Tenants;
 
 namespace UserProtection.Infrastructure.Dependency
 {
@@ -25,18 +33,39 @@ namespace UserProtection.Infrastructure.Dependency
             //services.AddScoped<UserProtectionContext>(provider =>
             //    provider.GetRequiredService<UserProtectionContext>());
 
+            // Core
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IPlanRepository, PlanRepository>();
+
+            // Payment
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+            // Subscription
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<ISubscriptionKeyRepository, SubscriptionKeyRepository>();
-            services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+            // Feature
             services.AddScoped<IFeatureRepository, FeatureRepository>();
+
+            // Plan
+            services.AddScoped<IPlanRepository, PlanRepository>();
             services.AddScoped<IPlanFeatureRepository, PlanFeatureRepository>();
-            services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<IPlanCourseRepository, PlanCourseRepository>();
-            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+            // Course
+            services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<ICourseModuleRepository, CourseModuleRepository>();
+            services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+            services.AddScoped<IUserCourseProgressRepository, UserCourseProgressRepository>();
+            services.AddScoped<ICourseReviewRepository, CourseReviewRepository>();
+
+            // Security
             services.AddScoped<ITrustedLinkRepository, TrustedLinkRepository>();
             services.AddScoped<ISuspiciousLinkRepository, SuspiciousLinkRepository>();
+
+            // Tenant
+            services.AddScoped<ITenantRepository, TenantRepository>();
+            services.AddScoped<ITenantUserAccessRepository, TenantUserAccessRepository>();
 
             return services;
         }

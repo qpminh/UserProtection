@@ -1,18 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UserProtection.Domain.Entities;
-using UserProtection.Infrastructure.Interfaces;
+using UserProtection.Infrastructure.Interfaces.Security;
 
 namespace UserProtection.Infrastructure.Repositories.Security
 {
     public class TrustedLinkRepository : ITrustedLinkRepository
     {
         private readonly UserProtectionContext _context;
-        public TrustedLinkRepository(UserProtectionContext context) 
+        public TrustedLinkRepository(UserProtectionContext context)
         {
             _context = context;
         }

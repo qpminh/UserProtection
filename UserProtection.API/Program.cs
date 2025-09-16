@@ -78,7 +78,7 @@ namespace UserProtection.API
                     config["TmnCode"]!,
                     config["HashSecret"]!,
                     config["VnpUrl"]!,
-                    config["ReturnUrl"]! 
+                    config["ReturnUrl"]!
                 );
             });
 
@@ -102,7 +102,7 @@ namespace UserProtection.API
                     ValidIssuer = jwtSettings["Issuer"],
                     ValidAudience = jwtSettings["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ClockSkew = TimeSpan.Zero 
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -134,7 +134,7 @@ namespace UserProtection.API
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication(); 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

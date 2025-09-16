@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using UserProtection.Application.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using UserProtection.Application.Interfaces.Security;
 
 namespace UserProtection.API.Controllers.Security
 {

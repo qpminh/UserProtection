@@ -1,0 +1,27 @@
+﻿using UserProtection.Application.Interfaces.Plans;
+using UserProtection.Domain.Entities;
+using UserProtection.Infrastructure.Interfaces.Plans;
+
+namespace UserProtection.Application.Services.Plans
+{
+    public class PlanFeatureService : IPlanFeatureService
+    {
+        private readonly IPlanFeatureRepository _repo;
+        public PlanFeatureService(IPlanFeatureRepository repo) => _repo = repo;
+
+        public async Task AddFeatureToPlanAsync(int planId, int featureId)
+        {
+            if (await _repo.GetAsync(planId, featureId) != null) return;
+            await _repo.AddAsync(new PlanFeature { PlanId = planId, FeatureId = featureId });
+            await _repo.SaveChangesAsync();
+        }
+
+        public async Task RemoveFeatureFromPlanAsync(int planId, int featureId)
+        {
+            var pf = await _repo.GetAsync(planId, featureId);
+            if (pf == null) return;
+            await _repo.RemoveAsync(pf);
+            await _repo.SaveChangesAsync();
+        }
+    }
+}

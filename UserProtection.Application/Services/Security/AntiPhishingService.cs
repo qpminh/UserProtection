@@ -1,8 +1,9 @@
 ﻿using System.Text.RegularExpressions;
+using UserProtection.Application.Interfaces.Security;
 
 namespace UserProtection.Application.Services.Security
 {
-    public class AntiPhishingService
+    public class AntiPhishingService : IAntiPhishingService
     {
         // 1 số regex / rule cơ bản (thực tế có thể lấy từ DB AntiPhishingPattern)
         private readonly List<string> _suspiciousPatterns = new()
