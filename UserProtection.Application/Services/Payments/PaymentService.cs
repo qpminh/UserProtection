@@ -1,5 +1,6 @@
 ﻿using UserProtection.Application.Dtos.Payments;
 using UserProtection.Application.Interfaces.Payments;
+using UserProtection.Application.Interfaces.Subscriptions;
 using UserProtection.Application.Services.Subscriptions;
 using UserProtection.Domain.Constants;
 using UserProtection.Domain.Entities;
@@ -13,13 +14,13 @@ namespace UserProtection.Application.Services.Payments
     {
         private readonly IPaymentRepository _paymentRepo;
         private readonly ISubscriptionRepository _subRepo;
-        private readonly SubscriptionKeyService _keyService;
+        private readonly ISubscriptionKeyService _keyService;
         private readonly VnPayHelper _vnPay;
 
         public PaymentService(
             IPaymentRepository paymentRepo,
             ISubscriptionRepository subRepo,
-            SubscriptionKeyService keyService,
+            ISubscriptionKeyService keyService,
             VnPayHelper vnPay)
         {
             _paymentRepo = paymentRepo;
