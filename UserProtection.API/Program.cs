@@ -25,7 +25,11 @@ namespace UserProtection.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "UserProtection API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "UserProtection API",
+                    Version = "v1"
+                });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -123,16 +127,15 @@ namespace UserProtection.API
             }
 
             // Middleware
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            // Luôn bật Swagger (Development + Production)
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseMiddleware<ApiKeyMiddleware>();
 
-            app.UseHttpsRedirection();
+            // Nếu chưa có SSL thì bỏ dòng này (chỉ dùng HTTP)
+            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();

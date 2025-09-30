@@ -621,7 +621,6 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
         modelBuilder.Entity<User>(entity =>
         {
-
             entity.ToTable("Users", "core");
 
             entity.HasIndex(e => e.TenantId, "IX_Users_TenantId");
@@ -633,8 +632,10 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .HasMaxLength(50)
                 .HasDefaultValue("Active");
 
-            entity.HasOne(d => d.Tenant).WithMany(p => p.Users)
+            entity.HasOne(d => d.Tenant)
+                .WithMany(p => p.Users)
                 .HasForeignKey(d => d.TenantId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Users_Tenants");
         });
