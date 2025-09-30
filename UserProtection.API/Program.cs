@@ -21,6 +21,17 @@ namespace UserProtection.API
             // Add controllers
             builder.Services.AddControllers();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
             // Swagger + JWT support
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
