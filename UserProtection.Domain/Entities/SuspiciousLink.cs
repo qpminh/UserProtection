@@ -26,6 +26,8 @@ public partial class SuspiciousLink
 
     public string? ActionTaken { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual AntiPhishingPattern? MatchedPattern { get; set; }
 
     public virtual Tenant? Tenant { get; set; }

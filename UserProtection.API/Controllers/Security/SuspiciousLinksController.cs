@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserProtection.Application.Dtos.Security;
 using UserProtection.Application.Interfaces.Security;
+using UserProtection.Domain.Entities;
 
 namespace UserProtection.API.Controllers.Security
 {
@@ -31,12 +32,32 @@ namespace UserProtection.API.Controllers.Security
             return Ok(list);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet("recent")]
         public async Task<IActionResult> Recent([FromQuery] int limit = 100)
         {
             var list = await _svc.GetRecent(limit);
             return Ok(list);
+        }
+
+        [HttpGet("phishing")]
+        public async Task<IActionResult> GetPhising()
+        {
+            var res = await _svc.GetPhising();
+            return Ok(res);
+        }
+
+        [HttpPost("phishing")]
+        public async Task<IActionResult> GetPhising(UrlRequestDto urlRequest)
+        {
+            var res = await _svc.GetPhising(urlRequest.Url);
+            return Ok(res);
+        }
+
+        [HttpPut]
+        public async Task Update(SuspiciousLink entity)
+        {
+            await _svc.Update(entity);
         }
     }
 

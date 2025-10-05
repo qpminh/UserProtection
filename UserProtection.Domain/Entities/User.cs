@@ -44,5 +44,7 @@ public partial class User : IdentityUser
 
     public virtual ICollection<TrustedLink> TrustedLinks { get; set; } = new List<TrustedLink>();
 
+    public virtual ICollection<UserDomainEntry> UserDomainEntries { get; set; } = new List<UserDomainEntry>();
+
     public virtual ICollection<UserCourseProgress> UserCourseProgresses { get; set; } = new List<UserCourseProgress>();
 }

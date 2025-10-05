@@ -2,6 +2,7 @@
 using UserProtection.Application.Interfaces.Cores;
 using UserProtection.Application.Interfaces.Courses;
 using UserProtection.Application.Interfaces.Features;
+using UserProtection.Application.Interfaces.Gemini;
 using UserProtection.Application.Interfaces.Payments;
 using UserProtection.Application.Interfaces.Plans;
 using UserProtection.Application.Interfaces.Security;
@@ -11,6 +12,7 @@ using UserProtection.Application.Mappers;
 using UserProtection.Application.Services.Cores;
 using UserProtection.Application.Services.Courses;
 using UserProtection.Application.Services.Features;
+using UserProtection.Application.Services.Gemini;
 using UserProtection.Application.Services.Payments;
 using UserProtection.Application.Services.Plans;
 using UserProtection.Application.Services.Security;
@@ -33,6 +35,7 @@ namespace UserProtection.Application.Dependency
 
             // Core
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             // Subscription
             services.AddScoped<ISubscriptionService, SubscriptionService>();
@@ -59,10 +62,14 @@ namespace UserProtection.Application.Dependency
             services.AddScoped<ITrustedLinkService, TrustedLinkService>();
             services.AddScoped<ISuspiciousLinkService, SuspiciousLinkService>();
             services.AddScoped<IAntiPhishingService, AntiPhishingService>();
+            services.AddScoped<IUserDomainEntriesService, UserDomainEntriesService>();
 
             // Tenant
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<ITenantUserAccessService, TenantUserAccessService>();
+
+            //Gemini
+            services.AddScoped<IAIService, GeminiAIService>();
 
             return services;
         }

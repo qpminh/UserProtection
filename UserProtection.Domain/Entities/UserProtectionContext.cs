@@ -43,6 +43,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
     public virtual DbSet<Plan> Plans { get; set; }
 
     public virtual DbSet<Subscription> Subscriptions { get; set; }
+
     public virtual DbSet<SubscriptionKey> SubscriptionKeys { get; set; }
 
     public virtual DbSet<SuspiciousLink> SuspiciousLinks { get; set; }
@@ -56,8 +57,13 @@ public partial class UserProtectionContext : IdentityDbContext<User>
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
+
+    public virtual DbSet<UserDomainEntry> UserDomainEntries { get; set; }
+
     public virtual DbSet<Feature> Features { get; set; }
+
     public virtual DbSet<PlanFeature> PlanFeatures { get; set; }
+
     public virtual DbSet<PlanCourse> PlanCourses { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -516,6 +522,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.Property(e => e.DetectedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.PageTitle).HasMaxLength(255);
             entity.Property(e => e.Url).HasMaxLength(500);
+            entity.Property(e => e.Status).HasMaxLength(50);
 
             entity.HasOne(d => d.MatchedPattern).WithMany(p => p.SuspiciousLinks)
                 .HasForeignKey(d => d.MatchedPatternId)
@@ -664,6 +671,43 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Progress_User");
+        });
+
+        modelBuilder.Entity<UserDomainEntry>(entity =>
+        {
+            entity.ToTable("UserDomainEntries", "security");
+
+            entity.HasKey(e => e.EntryId);
+
+            entity.Property(e => e.EntryId)
+                .ValueGeneratedOnAdd();
+
+            entity.Property(e => e.UserId)
+                .HasMaxLength(450)
+                .IsRequired();
+
+            entity.Property(e => e.Domain)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            entity.Property(e => e.EntryType)
+                .IsRequired();
+
+            entity.Property(e => e.Safe);
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.UserDomainEntries)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => new { e.UserId, e.Domain, e.EntryType })
+                .IsUnique()
+                .HasDatabaseName("UX_UDE_User_Domain_Type");
         });
 
         OnModelCreatingPartial(modelBuilder);
