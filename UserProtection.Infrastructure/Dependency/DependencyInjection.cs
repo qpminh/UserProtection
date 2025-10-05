@@ -62,6 +62,7 @@ namespace UserProtection.Infrastructure.Dependency
             // Security
             services.AddScoped<ITrustedLinkRepository, TrustedLinkRepository>();
             services.AddScoped<ISuspiciousLinkRepository, SuspiciousLinkRepository>();
+            services.AddScoped<IUserDomainEntriesRepository, UserDomainEntriesRepository>();
 
             // Tenant
             services.AddScoped<ITenantRepository, TenantRepository>();

@@ -24,5 +24,19 @@ namespace UserProtection.Infrastructure.Repositories.Security
 
         public async Task<IEnumerable<SuspiciousLink>> GetRecent(int limit = 100)
             => await _context.SuspiciousLinks.OrderByDescending(x => x.DetectedAt).Take(limit).ToListAsync();
+
+        public async Task<IEnumerable<SuspiciousLink>> GetPhising(string status)
+            => await _context.SuspiciousLinks
+            .Where(x => x.Status == status).ToListAsync();
+
+        public async Task<IEnumerable<SuspiciousLink>> GetPhising(string status, string url)
+            => await _context.SuspiciousLinks
+            .Where(x => x.Status == status && x.Url == url).ToListAsync();
+
+        public async Task Update(SuspiciousLink entity)
+        {
+            _context.SuspiciousLinks.Update(entity);
+            await _context.SaveChangesAsync();
+        }
     }
 }

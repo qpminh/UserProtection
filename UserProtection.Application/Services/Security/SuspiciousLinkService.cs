@@ -38,5 +38,22 @@ namespace UserProtection.Application.Services.Security
             var list = await _repo.GetRecent(limit);
             return _mapper.Map<IEnumerable<SuspiciousLinkDto>>(list);
         }
+
+        public async Task<IEnumerable<SuspiciousLink>> GetPhising()
+        {
+            var status = "Active";
+            return await _repo.GetPhising(status);
+        }
+
+        public async Task<IEnumerable<SuspiciousLink>> GetPhising(string url)
+        {
+            var status = "Active";
+            return await _repo.GetPhising(status, url);
+        }
+
+        public async Task Update(SuspiciousLink entity)
+        {
+            await _repo.Update(entity);
+        }
     }
 }
