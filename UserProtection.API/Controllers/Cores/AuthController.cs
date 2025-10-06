@@ -19,6 +19,11 @@ namespace UserProtection.API.Controllers.Cores
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
+            if (dto.TenantId == 0 || dto.TenantId == null)
+            {
+                dto.TenantId = null;
+            }
+
             var user = new User
             {
                 UserName = dto.Email,

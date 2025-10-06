@@ -68,6 +68,9 @@ namespace UserProtection.Application.Services.Cores
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
+                var defaultRole = "Customer";
+                var roleResult = await _userManager.AddToRoleAsync(user, defaultRole);
+
                 await LogAction(user.Id, user.TenantId, "User Registered");
             }
             return result;
