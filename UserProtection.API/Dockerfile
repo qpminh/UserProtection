@@ -8,7 +8,7 @@ COPY ["UserProtection.Application/UserProtection.Application.csproj", "UserProte
 COPY ["UserProtection.Infrastructure/UserProtection.Infrastructure.csproj", "UserProtection.Infrastructure/"]
 COPY ["UserProtection.Domain/UserProtection.Domain.csproj", "UserProtection.Domain/"]
 
-# Khôi phục dependency (restore)
+# Restore dependency
 RUN dotnet restore "UserProtection.API/UserProtection.API.csproj"
 
 # Copy toàn bộ source code
@@ -21,10 +21,14 @@ RUN dotnet publish "UserProtection.API.csproj" -c Release -o /app/publish /p:Use
 # ===================== RUNTIME STAGE =====================
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
+# Copy publish output từ build stage
 COPY --from=build /app/publish .
 
-# Render sẽ map port động → đặt biến môi trường để app dùng cổng Render cung cấp
-ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT:-8080}
+# Bắt buộc cho Render: dùng port do Render cấp qua biến $PORT
+ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
 
-EXPOSE 8080
+# EXPOSE không cần số cụ thể — Render tự detect từ $PORT
+EXPOSE ${PORT}
+
 ENTRYPOINT ["dotnet", "UserProtection.API.dll"]
