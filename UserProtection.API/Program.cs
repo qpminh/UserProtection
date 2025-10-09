@@ -124,7 +124,7 @@ namespace UserProtection.API
             var app = builder.Build();
 
             // ==================== Port for Render ====================
-            var port = Environment.GetEnvironmentVariable("PORT");
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
             if (!string.IsNullOrEmpty(port))
             {
                 app.Urls.Add($"http://0.0.0.0:{port}");
