@@ -125,10 +125,8 @@ namespace UserProtection.API
 
             // ==================== Port for Render ====================
             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            if (!string.IsNullOrEmpty(port))
-            {
-                app.Urls.Add($"http://0.0.0.0:{port}");
-            }
+            app.Urls.Add($"http://0.0.0.0:{port}");
+            Console.WriteLine($"✅ Server is running on http://0.0.0.0:{port}");
 
             // ==================== Database seeding ====================
             using (var scope = app.Services.CreateScope())
@@ -145,7 +143,6 @@ namespace UserProtection.API
             }
 
             // Middleware
-            // Luôn bật Swagger (Development + Production)
             app.UseSwagger();
             app.UseSwaggerUI();
 
@@ -159,6 +156,8 @@ namespace UserProtection.API
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.MapGet("/health", () => Results.Ok("Healthy ✅"));
 
             app.Run();
         }
