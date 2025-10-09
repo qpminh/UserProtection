@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace UserProtection.Domain.Entities;
 
@@ -68,8 +69,22 @@ public partial class UserProtectionContext : IdentityDbContext<User>
     public virtual DbSet<PlanCourse> PlanCourses { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=dpg-d3j83mvfte5s73f683cg-a.singapore-postgres.render.com;Port=5432;Database=userprotection;Username=userprotection_user;Password=7gUoTSnDGGtkVnSCmkKfqbqgVKaOxlch;Ssl Mode=Require;Trust Server Certificate=true");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables() 
+                .Build();
+
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            Console.WriteLine($"[DB] Using connection: {connectionString?.Substring(0, Math.Min(connectionString.Length, 60))}...");
+
+            optionsBuilder.UseNpgsql(connectionString);
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

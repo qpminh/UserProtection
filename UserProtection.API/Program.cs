@@ -123,6 +123,13 @@ namespace UserProtection.API
 
             var app = builder.Build();
 
+            // ==================== Port for Render ====================
+            var port = Environment.GetEnvironmentVariable("PORT");
+            if (!string.IsNullOrEmpty(port))
+            {
+                app.Urls.Add($"http://0.0.0.0:{port}");
+            }
+
             // ==================== Database seeding ====================
             using (var scope = app.Services.CreateScope())
             {

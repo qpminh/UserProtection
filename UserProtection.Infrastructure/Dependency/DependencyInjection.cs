@@ -30,9 +30,6 @@ namespace UserProtection.Infrastructure.Dependency
             services.AddDbContext<UserProtectionContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            //services.AddScoped<UserProtectionContext>(provider =>
-            //    provider.GetRequiredService<UserProtectionContext>());
-
             // Core
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

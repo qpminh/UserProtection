@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: userprotection-api
+    env: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./UserProtection.API/Dockerfile
+    healthCheckPath: /swagger/index.html
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+      - key: Jwt__Key
+        sync: false
+      - key: Jwt__Issuer
+        value: userProtection
+      - key: Jwt__Audience
+        value: userProtectionClient
+      - key: VnPay__TmnCode
+        value: X4OCURNS
+      - key: VnPay__HashSecret
+        value: 31VDDFEE2TFIIBLEETLOK5ZB704FTK84
+      - key: VnPay__VnpUrl
+        value: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      - key: VnPay__ReturnUrl
+        value: https://userprotection-api.onrender.com/api/payment/callback
+      - key: Gemini__ApiKey
+        sync: false
