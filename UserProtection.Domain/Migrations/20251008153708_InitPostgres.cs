@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace UserProtection.Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class Identity : Migration
+    public partial class InitPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,10 +28,10 @@ namespace UserProtection.Domain.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -37,18 +39,32 @@ namespace UserProtection.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Features",
+                schema: "billing",
+                columns: table => new
+                {
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Features", x => x.FeatureId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Plans",
                 schema: "billing",
                 columns: table => new
                 {
-                    PlanId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    BillingCycle = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Features = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    PlanId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Price = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    BillingCycle = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -60,14 +76,14 @@ namespace UserProtection.Domain.Migrations
                 schema: "core",
                 columns: table => new
                 {
-                    TenantId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CompanyName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Domain = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    ContactPhone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active")
+                    TenantId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CompanyName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Domain = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    ContactPhone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active")
                 },
                 constraints: table =>
                 {
@@ -78,11 +94,11 @@ namespace UserProtection.Domain.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -96,30 +112,57 @@ namespace UserProtection.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlanFeatures",
+                schema: "billing",
+                columns: table => new
+                {
+                    PlanId = table.Column<int>(type: "integer", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlanFeatures", x => new { x.PlanId, x.FeatureId });
+                    table.ForeignKey(
+                        name: "FK_PlanFeatures_Features_FeatureId",
+                        column: x => x.FeatureId,
+                        principalSchema: "billing",
+                        principalTable: "Features",
+                        principalColumn: "FeatureId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlanFeatures_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalSchema: "billing",
+                        principalTable: "Plans",
+                        principalColumn: "PlanId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 schema: "core",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenantId = table.Column<int>(type: "int", nullable: true),
-                    FirstName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active"),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    FirstName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    LastName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active"),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -138,19 +181,19 @@ namespace UserProtection.Domain.Migrations
                 schema: "security",
                 columns: table => new
                 {
-                    PatternId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PatternType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    PatternText = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PatternHtml = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Source = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    TenantId = table.Column<int>(type: "int", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active")
+                    PatternId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    PatternType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    PatternText = table.Column<string>(type: "text", nullable: true),
+                    PatternHtml = table.Column<string>(type: "text", nullable: true),
+                    Source = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active")
                 },
                 constraints: table =>
                 {
@@ -175,11 +218,11 @@ namespace UserProtection.Domain.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -197,10 +240,10 @@ namespace UserProtection.Domain.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -218,8 +261,8 @@ namespace UserProtection.Domain.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,10 +286,10 @@ namespace UserProtection.Domain.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -265,13 +308,13 @@ namespace UserProtection.Domain.Migrations
                 schema: "core",
                 columns: table => new
                 {
-                    LogId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TenantId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Action = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Metadata = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LogId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Action = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    Metadata = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -297,18 +340,18 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    CourseId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TenantId = table.Column<int>(type: "int", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Level = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active")
+                    CourseId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Level = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Price = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active")
                 },
                 constraints: table =>
                 {
@@ -334,15 +377,15 @@ namespace UserProtection.Domain.Migrations
                 schema: "billing",
                 columns: table => new
                 {
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TenantId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PlanId = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active"),
-                    AutoRenew = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    PlanId = table.Column<int>(type: "integer", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active"),
+                    AutoRenew = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -372,17 +415,17 @@ namespace UserProtection.Domain.Migrations
                 schema: "security",
                 columns: table => new
                 {
-                    LinkId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TenantId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    Domain = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Source = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active")
+                    LinkId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Domain = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Source = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active")
                 },
                 constraints: table =>
                 {
@@ -404,23 +447,50 @@ namespace UserProtection.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserDomainEntries",
+                schema: "security",
+                columns: table => new
+                {
+                    EntryId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    Domain = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Safe = table.Column<bool>(type: "boolean", nullable: true),
+                    EntryType = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDomainEntries", x => x.EntryId);
+                    table.ForeignKey(
+                        name: "FK_UserDomainEntries_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "core",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SuspiciousLinks",
                 schema: "security",
                 columns: table => new
                 {
-                    SuspiciousId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TenantId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Url = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    PageTitle = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    PageContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HtmlContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DetectedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    CheckResult = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ConfidenceScore = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    MatchedPatternId = table.Column<int>(type: "int", nullable: true),
-                    ActionTaken = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    SuspiciousId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    PageTitle = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    PageContent = table.Column<string>(type: "text", nullable: true),
+                    HtmlContent = table.Column<string>(type: "text", nullable: true),
+                    DetectedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    CheckResult = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    ConfidenceScore = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    MatchedPatternId = table.Column<int>(type: "integer", nullable: true),
+                    ActionTaken = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -453,14 +523,14 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    ModuleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrderIndex = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
+                    ModuleId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    OrderIndex = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -485,13 +555,13 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    ReviewId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
+                    ReviewId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -515,12 +585,12 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    EnrollmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    EnrolledAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active")
+                    EnrollmentId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    EnrolledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active")
                 },
                 constraints: table =>
                 {
@@ -540,18 +610,46 @@ namespace UserProtection.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlanCourses",
+                schema: "billing",
+                columns: table => new
+                {
+                    PlanId = table.Column<int>(type: "integer", nullable: false),
+                    CourseId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlanCourses", x => new { x.PlanId, x.CourseId });
+                    table.ForeignKey(
+                        name: "FK_PlanCourses_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalSchema: "learning",
+                        principalTable: "Courses",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlanCourses_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalSchema: "billing",
+                        principalTable: "Plans",
+                        principalColumn: "PlanId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Payments",
                 schema: "billing",
                 columns: table => new
                 {
-                    PaymentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    TransactionId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Completed")
+                    PaymentId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    PaymentMethod = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    TransactionId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Completed"),
+                    FrontendReturnUrl = table.Column<string>(type: "character varying(500)", unicode: false, maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -565,17 +663,42 @@ namespace UserProtection.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SubscriptionKeys",
+                schema: "billing",
+                columns: table => new
+                {
+                    KeyId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    KeyValue = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    ExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionKeys", x => x.KeyId);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionKeys_Subscriptions",
+                        column: x => x.SubscriptionId,
+                        principalSchema: "billing",
+                        principalTable: "Subscriptions",
+                        principalColumn: "SubscriptionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TenantUserAccess",
                 schema: "billing",
                 columns: table => new
                 {
-                    AccessId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TenantId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active")
+                    AccessId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    AssignedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active")
                 },
                 constraints: table =>
                 {
@@ -605,19 +728,19 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    AssessmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    ModuleId = table.Column<int>(type: "int", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AssessmentType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TimeLimitMinutes = table.Column<int>(type: "int", nullable: true),
-                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TotalPoints = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active")
+                    AssessmentId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    ModuleId = table.Column<int>(type: "integer", nullable: true),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    AssessmentType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    TimeLimitMinutes = table.Column<int>(type: "integer", nullable: true),
+                    DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    TotalPoints = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false, defaultValue: "Active")
                 },
                 constraints: table =>
                 {
@@ -649,14 +772,14 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    ProgressId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    ModuleId = table.Column<int>(type: "int", nullable: true),
-                    Progress = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
-                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastAccessedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
+                    ProgressId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    ModuleId = table.Column<int>(type: "integer", nullable: true),
+                    Progress = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastAccessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -687,14 +810,14 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    AttemptId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AssessmentId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Score = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    AttemptNumber = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
+                    AttemptId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AssessmentId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Score = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    AttemptNumber = table.Column<int>(type: "integer", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
@@ -718,14 +841,14 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    QuestionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AssessmentId = table.Column<int>(type: "int", nullable: false),
-                    QuestionText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    QuestionType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Points = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
-                    OrderIndex = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
+                    QuestionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AssessmentId = table.Column<int>(type: "integer", nullable: false),
+                    QuestionText = table.Column<string>(type: "text", nullable: false),
+                    QuestionType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Points = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
+                    OrderIndex = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -750,14 +873,14 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    SubmissionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AssessmentId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Grade = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    Feedback = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
+                    SubmissionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AssessmentId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    Grade = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
+                    Feedback = table.Column<string>(type: "text", nullable: true),
+                    SubmittedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -781,11 +904,11 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    OptionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    QuestionId = table.Column<int>(type: "int", nullable: false),
-                    OptionText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsCorrect = table.Column<bool>(type: "bit", nullable: false)
+                    OptionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    QuestionId = table.Column<int>(type: "integer", nullable: false),
+                    OptionText = table.Column<string>(type: "text", nullable: false),
+                    IsCorrect = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -803,13 +926,13 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning",
                 columns: table => new
                 {
-                    AnswerId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AttemptId = table.Column<int>(type: "int", nullable: false),
-                    QuestionId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: true),
-                    AnswerText = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsCorrect = table.Column<bool>(type: "bit", nullable: true)
+                    AnswerId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AttemptId = table.Column<int>(type: "integer", nullable: false),
+                    QuestionId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: true),
+                    AnswerText = table.Column<string>(type: "text", nullable: true),
+                    IsCorrect = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -835,6 +958,8 @@ namespace UserProtection.Domain.Migrations
                         principalColumn: "QuestionId");
                 });
 
+            // ==== PostgreSQL-compatible version ====
+
             migrationBuilder.CreateIndex(
                 name: "IX_AntiPhishingPatterns_UserId",
                 schema: "security",
@@ -856,8 +981,7 @@ namespace UserProtection.Domain.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -1028,7 +1152,19 @@ namespace UserProtection.Domain.Migrations
                 table: "Payments",
                 column: "TransactionId",
                 unique: true,
-                filter: "([TransactionId] IS NOT NULL)");
+                filter: "\"TransactionId\" IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlanCourses_CourseId",
+                schema: "billing",
+                table: "PlanCourses",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlanFeatures_FeatureId",
+                schema: "billing",
+                table: "PlanFeatures",
+                column: "FeatureId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Plans_Name",
@@ -1036,6 +1172,19 @@ namespace UserProtection.Domain.Migrations
                 table: "Plans",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionKeys_KeyValue",
+                schema: "billing",
+                table: "SubscriptionKeys",
+                column: "KeyValue",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionKeys_SubscriptionId",
+                schema: "billing",
+                table: "SubscriptionKeys",
+                column: "SubscriptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_PlanId",
@@ -1054,14 +1203,14 @@ namespace UserProtection.Domain.Migrations
                 schema: "billing",
                 table: "Subscriptions",
                 column: "TenantId",
-                filter: "([TenantId] IS NOT NULL)");
+                filter: "\"TenantId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_User",
                 schema: "billing",
                 table: "Subscriptions",
                 column: "UserId",
-                filter: "([UserId] IS NOT NULL)");
+                filter: "\"UserId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SuspiciousLinks_MatchedPatternId",
@@ -1093,7 +1242,7 @@ namespace UserProtection.Domain.Migrations
                 table: "Tenants",
                 column: "Domain",
                 unique: true,
-                filter: "([Domain] IS NOT NULL)");
+                filter: "\"Domain\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TenantUserAccess_SubscriptionId",
@@ -1113,7 +1262,7 @@ namespace UserProtection.Domain.Migrations
                 table: "TenantUserAccess",
                 columns: new[] { "TenantId", "UserId", "SubscriptionId" },
                 unique: true,
-                filter: "([Status]='Active')");
+                filter: "\"Status\"='Active'");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrustedLinks_Domain",
@@ -1133,7 +1282,7 @@ namespace UserProtection.Domain.Migrations
                 table: "TrustedLinks",
                 columns: new[] { "TenantId", "Domain", "Url" },
                 unique: true,
-                filter: "([Status]='Active')");
+                filter: "\"Status\"='Active'");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Progress_User_Course",
@@ -1154,6 +1303,13 @@ namespace UserProtection.Domain.Migrations
                 column: "ModuleId");
 
             migrationBuilder.CreateIndex(
+                name: "UX_UDE_User_Domain_Type",
+                schema: "security",
+                table: "UserDomainEntries",
+                columns: new[] { "UserId", "Domain", "EntryType" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 schema: "core",
                 table: "Users",
@@ -1170,8 +1326,7 @@ namespace UserProtection.Domain.Migrations
                 schema: "core",
                 table: "Users",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -1217,6 +1372,18 @@ namespace UserProtection.Domain.Migrations
                 schema: "billing");
 
             migrationBuilder.DropTable(
+                name: "PlanCourses",
+                schema: "billing");
+
+            migrationBuilder.DropTable(
+                name: "PlanFeatures",
+                schema: "billing");
+
+            migrationBuilder.DropTable(
+                name: "SubscriptionKeys",
+                schema: "billing");
+
+            migrationBuilder.DropTable(
                 name: "SuspiciousLinks",
                 schema: "security");
 
@@ -1233,6 +1400,10 @@ namespace UserProtection.Domain.Migrations
                 schema: "learning");
 
             migrationBuilder.DropTable(
+                name: "UserDomainEntries",
+                schema: "security");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -1242,6 +1413,10 @@ namespace UserProtection.Domain.Migrations
             migrationBuilder.DropTable(
                 name: "AssessmentOptions",
                 schema: "learning");
+
+            migrationBuilder.DropTable(
+                name: "Features",
+                schema: "billing");
 
             migrationBuilder.DropTable(
                 name: "AntiPhishingPatterns",

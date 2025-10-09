@@ -28,7 +28,7 @@ namespace UserProtection.Infrastructure.Dependency
             IConfiguration configuration)
         {
             services.AddDbContext<UserProtectionContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             //services.AddScoped<UserProtectionContext>(provider =>
             //    provider.GetRequiredService<UserProtectionContext>());

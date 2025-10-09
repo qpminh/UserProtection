@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace UserProtection.Domain.Entities;
 
@@ -68,7 +69,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(local);Database=UserProtection;Uid=sa;Pwd=12345;TrustServerCertificate=True");
+        => optionsBuilder.UseNpgsql("Host=dpg-d3j83mvfte5s73f683cg-a.singapore-postgres.render.com;Port=5432;Database=userprotection;Username=userprotection_user;Password=7gUoTSnDGGtkVnSCmkKfqbqgVKaOxlch;Ssl Mode=Require;Trust Server Certificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
