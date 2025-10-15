@@ -152,6 +152,8 @@ namespace UserProtection.API
             // Nếu chưa có SSL thì bỏ dòng này (chỉ dùng HTTP)
             // app.UseHttpsRedirection();
 
+            app.UseCors("AllowAllOrigins");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
