@@ -146,13 +146,12 @@ namespace UserProtection.API
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            app.UseCors("AllowAllOrigins");
+
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseMiddleware<ApiKeyMiddleware>();
 
-            // Nếu chưa có SSL thì bỏ dòng này (chỉ dùng HTTP)
             // app.UseHttpsRedirection();
-
-            app.UseCors("AllowAllOrigins");
 
             app.UseAuthentication();
             app.UseAuthorization();
