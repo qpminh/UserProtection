@@ -140,6 +140,7 @@ namespace UserProtection.API
                 await RoleSeeder.SeedRolesAsync(roleManager, logger);
                 await UserSeeder.SeedUsersAsync(services);
                 await PlanSeeder.SeedAsync(context);
+                await BlogSeeder.SeedAsync(context);
             }
 
             // Middleware

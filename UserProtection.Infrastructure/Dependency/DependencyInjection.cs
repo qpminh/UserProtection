@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UserProtection.Domain.Entities;
+using UserProtection.Infrastructure.Interfaces.Blogs;
 using UserProtection.Infrastructure.Interfaces.Core;
 using UserProtection.Infrastructure.Interfaces.Courses;
 using UserProtection.Infrastructure.Interfaces.Features;
@@ -10,6 +11,7 @@ using UserProtection.Infrastructure.Interfaces.Plans;
 using UserProtection.Infrastructure.Interfaces.Security;
 using UserProtection.Infrastructure.Interfaces.Subscriptions;
 using UserProtection.Infrastructure.Interfaces.Tenants;
+using UserProtection.Infrastructure.Repositories.Blogs;
 using UserProtection.Infrastructure.Repositories.Cores;
 using UserProtection.Infrastructure.Repositories.Courses;
 using UserProtection.Infrastructure.Repositories.Features;
@@ -64,6 +66,8 @@ namespace UserProtection.Infrastructure.Dependency
             // Tenant
             services.AddScoped<ITenantRepository, TenantRepository>();
             services.AddScoped<ITenantUserAccessRepository, TenantUserAccessRepository>();
+
+            services.AddScoped<IBlogRepository, BlogRepository>();
 
             return services;
         }

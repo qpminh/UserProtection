@@ -17,6 +17,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
     }
 
     public virtual DbSet<AntiPhishingPattern> AntiPhishingPatterns { get; set; }
+    public virtual DbSet<Blog> Blogs { get; set; }
 
     public virtual DbSet<Assessment> Assessments { get; set; }
 
@@ -90,6 +91,41 @@ public partial class UserProtectionContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Blog>(entity =>
+        {
+            entity.HasKey(e => e.BlogId).HasName("PK__Blog__3214EC07A1B2C3D4");
+
+            entity.ToTable("Blogs", "content");
+
+            entity.HasIndex(e => e.Slug, "IX_Blogs_Slug").IsUnique();
+
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(10000);
+
+            entity.Property(e => e.Slug)
+                .IsRequired()
+                .HasMaxLength(10000);
+
+            entity.Property(e => e.Content)
+                .IsRequired();
+
+            entity.Property(e => e.Summary)
+                .HasMaxLength(10000);
+
+            entity.Property(e => e.ThumbnailUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.Tags)
+                .HasMaxLength(255);
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("timezone('utc', now())");
+
+            entity.Property(e => e.UpdatedAt)
+                .IsRequired(false);
+        });
+
         modelBuilder.Entity<AntiPhishingPattern>(entity =>
         {
             entity.HasKey(e => e.PatternId).HasName("PK__AntiPhis__0A631B52D5DCBC6A");
@@ -98,7 +134,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.HasIndex(e => new { e.TenantId, e.Status }, "IX_APP_Tenant_Status");
 
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.PatternType).HasMaxLength(50);
             entity.Property(e => e.Source).HasMaxLength(255);
             entity.Property(e => e.Status)
@@ -127,7 +163,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.HasIndex(e => new { e.CourseId, e.Status }, "IX_Assessments_Course_Status");
 
             entity.Property(e => e.AssessmentType).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Active");
@@ -184,7 +220,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.Property(e => e.AttemptNumber).HasDefaultValue(1);
             entity.Property(e => e.Score).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.StartedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.StartedAt).HasDefaultValueSql("timezone('utc', now())");
 
             entity.HasOne(d => d.Assessment).WithMany(p => p.AssessmentAttempts)
                 .HasForeignKey(d => d.AssessmentId)
@@ -243,7 +279,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.HasIndex(e => new { e.AssessmentId, e.UserId }, "IX_AS_Assessment_User");
 
             entity.Property(e => e.Grade).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.SubmittedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.SubmittedAt).HasDefaultValueSql("timezone('utc', now())");
 
             entity.HasOne(d => d.Assessment).WithMany(p => p.AssessmentSubmissions)
                 .HasForeignKey(d => d.AssessmentId)
@@ -267,7 +303,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.HasIndex(e => new { e.UserId, e.CreatedAt }, "IX_AuditLogs_User");
 
             entity.Property(e => e.Action).HasMaxLength(255);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
 
             entity.HasOne(d => d.Tenant).WithMany(p => p.AuditLogs)
                 .HasForeignKey(d => d.TenantId)
@@ -289,7 +325,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.HasIndex(e => new { e.TenantId, e.Status }, "IX_Courses_Tenant_Status");
 
             entity.Property(e => e.Category).HasMaxLength(100);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Level).HasMaxLength(50);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Status)
@@ -358,7 +394,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.HasIndex(e => new { e.CourseId, e.OrderIndex }, "UX_Modules_Course_Order").IsUnique();
 
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Title).HasMaxLength(255);
             entity.Property(e => e.UserId).HasMaxLength(450);
 
@@ -381,7 +417,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.HasIndex(e => new { e.UserId, e.CourseId }, "UX_Reviews_User_Course").IsUnique();
 
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
 
             entity.HasOne(d => d.Course).WithMany(p => p.CourseReviews)
                 .HasForeignKey(d => d.CourseId)
@@ -402,7 +438,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.HasIndex(e => new { e.UserId, e.CourseId }, "UX_Enroll_User_Course").IsUnique();
 
-            entity.Property(e => e.EnrolledAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.EnrolledAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Active");
@@ -431,7 +467,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .HasFilter("([TransactionId] IS NOT NULL)");
 
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.PaymentDate).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.PaymentDate).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.PaymentMethod).HasMaxLength(50);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
@@ -476,7 +512,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.HasIndex(e => e.UserId, "IX_Subscriptions_User").HasFilter("([UserId] IS NOT NULL)");
 
             entity.Property(e => e.AutoRenew).HasDefaultValue(true);
-            entity.Property(e => e.StartDate).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.StartDate).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Active");
@@ -508,7 +544,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .HasMaxLength(200);
 
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(sysutcdatetime())");
+                .HasDefaultValueSql("timezone('utc', now())");
 
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
@@ -535,7 +571,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.Property(e => e.ActionTaken).HasMaxLength(50);
             entity.Property(e => e.CheckResult).HasMaxLength(50);
             entity.Property(e => e.ConfidenceScore).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.DetectedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.DetectedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.PageTitle).HasMaxLength(255);
             entity.Property(e => e.Url).HasMaxLength(500);
             entity.Property(e => e.Status).HasMaxLength(50);
@@ -569,7 +605,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.Property(e => e.Address).HasMaxLength(500);
             entity.Property(e => e.CompanyName).HasMaxLength(255);
             entity.Property(e => e.ContactPhone).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Domain).HasMaxLength(255);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
@@ -588,7 +624,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .IsUnique()
                 .HasFilter("([Status]='Active')");
 
-            entity.Property(e => e.AssignedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.AssignedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Active");
@@ -622,7 +658,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
                 .HasFilter("([Status]='Active')");
 
             entity.Property(e => e.Category).HasMaxLength(100);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Domain).HasMaxLength(255);
             entity.Property(e => e.Source).HasMaxLength(255);
             entity.Property(e => e.Status)
@@ -648,7 +684,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.HasIndex(e => e.TenantId, "IX_Users_TenantId");
 
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.FirstName).HasMaxLength(255);
             entity.Property(e => e.LastName).HasMaxLength(255);
             entity.Property(e => e.Status)
@@ -671,7 +707,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
 
             entity.HasIndex(e => new { e.UserId, e.CourseId }, "IX_Progress_User_Course");
 
-            entity.Property(e => e.LastAccessedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.LastAccessedAt).HasDefaultValueSql("timezone('utc', now())");
             entity.Property(e => e.Progress).HasColumnType("decimal(5, 2)");
 
             entity.HasOne(d => d.Course).WithMany(p => p.UserCourseProgresses)
@@ -715,7 +751,7 @@ public partial class UserProtectionContext : IdentityDbContext<User>
             entity.Property(e => e.Status)
                 .HasMaxLength(50);
 
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
 
             entity.HasOne(e => e.User)
                 .WithMany(u => u.UserDomainEntries)

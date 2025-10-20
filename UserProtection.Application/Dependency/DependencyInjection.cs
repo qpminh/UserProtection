@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using UserProtection.Application.Interfaces.Blogs;
 using UserProtection.Application.Interfaces.Cores;
 using UserProtection.Application.Interfaces.Courses;
 using UserProtection.Application.Interfaces.Features;
@@ -9,6 +10,7 @@ using UserProtection.Application.Interfaces.Security;
 using UserProtection.Application.Interfaces.Subscriptions;
 using UserProtection.Application.Interfaces.Tenants;
 using UserProtection.Application.Mappers;
+using UserProtection.Application.Services.Blogs;
 using UserProtection.Application.Services.Cores;
 using UserProtection.Application.Services.Courses;
 using UserProtection.Application.Services.Features;
@@ -18,6 +20,7 @@ using UserProtection.Application.Services.Plans;
 using UserProtection.Application.Services.Security;
 using UserProtection.Application.Services.Subscriptions;
 using UserProtection.Application.Services.Tenants;
+using UserProtection.Domain.Entities;
 
 namespace UserProtection.Application.Dependency
 {
@@ -70,6 +73,8 @@ namespace UserProtection.Application.Dependency
 
             //Gemini
             services.AddScoped<IAIService, GeminiAIService>();
+
+            services.AddScoped<IBlogService, BlogService>();
 
             return services;
         }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UserProtection.Domain.Entities;
@@ -11,9 +12,11 @@ using UserProtection.Domain.Entities;
 namespace UserProtection.Domain.Migrations
 {
     [DbContext(typeof(UserProtectionContext))]
-    partial class UserProtectionContextModelSnapshot : ModelSnapshot
+    [Migration("20251020103426_AddBlogEntity")]
+    partial class AddBlogEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,7 +168,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -235,7 +238,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -340,7 +343,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("StartedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -448,7 +451,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("SubmittedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -480,7 +483,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Metadata")
                         .HasColumnType("text");
@@ -516,7 +519,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -567,7 +570,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -628,7 +631,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<int>("OrderIndex")
                         .HasColumnType("integer");
@@ -670,7 +673,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
@@ -704,7 +707,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("EnrolledAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -769,7 +772,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("PaymentDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("PaymentMethod")
                         .HasMaxLength(50)
@@ -892,7 +895,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("StartDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -934,7 +937,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<DateTime?>("ExpiredAt")
                         .HasColumnType("timestamp with time zone");
@@ -985,7 +988,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("DetectedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("HtmlContent")
                         .HasColumnType("text");
@@ -1053,7 +1056,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Domain")
                         .HasMaxLength(255)
@@ -1087,7 +1090,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("AssignedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -1135,7 +1138,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Domain")
                         .IsRequired()
@@ -1196,7 +1199,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -1287,7 +1290,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime>("LastAccessedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<int?>("ModuleId")
                         .HasColumnType("integer");
@@ -1322,7 +1325,7 @@ namespace UserProtection.Domain.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("timezone('utc', now())");
+                        .HasDefaultValueSql("(sysutcdatetime())");
 
                     b.Property<string>("Domain")
                         .IsRequired()

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using UserProtection.Application.Dtos.Assessments;
+using UserProtection.Application.Dtos.Blogs;
 using UserProtection.Application.Dtos.Cores;
 using UserProtection.Application.Dtos.Courses;
 using UserProtection.Application.Dtos.Features;
@@ -98,6 +99,12 @@ namespace UserProtection.Application.Mappers
             CreateMap<CreateAssessmentSubmissionDto, AssessmentSubmission>();
             CreateMap<UpdateAssessmentSubmissionDto, AssessmentSubmission>();
 
+            // Blog
+            CreateMap<Blog, BlogDto>().ReverseMap();
+            CreateMap<CreateBlogRequest, Blog>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+            CreateMap<UpdateBlogRequest, Blog>()
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
         }
     }
 }
