@@ -141,6 +141,7 @@ namespace UserProtection.API
                 await UserSeeder.SeedUsersAsync(services);
                 await PlanSeeder.SeedAsync(context);
                 await BlogSeeder.SeedAsync(context);
+                await SecuritySeeder.SeedAsync(context);
             }
 
             // Middleware
