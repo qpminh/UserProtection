@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Dtos.Subscriptions;
 using UserProtection.Application.Interfaces.Subscriptions;
+using UserProtection.Application.Interfaces.Cores;
 
 namespace UserProtection.API.Controllers.Subscriptions
 {
@@ -9,86 +11,77 @@ namespace UserProtection.API.Controllers.Subscriptions
     public class SubscriptionController : ControllerBase
     {
         private readonly ISubscriptionService _subService;
-        private readonly ISubscriptionKeyService _keyService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public SubscriptionController(ISubscriptionService subService, ISubscriptionKeyService keyService)
+        public SubscriptionController(ISubscriptionService subService, ICurrentUserService currentUserService)
         {
             _subService = subService;
-            _keyService = keyService;
+            _currentUserService = currentUserService;
         }
 
-        // -----------------------
-        // CRUD Subscription
-        // -----------------------
-
-        [HttpPost("tenant/{tenantId}")]
-        public async Task<IActionResult> CreateSubscription(
-            int tenantId,
-            [FromBody] CreateSubscriptionRequest request)
+        [HttpPost("create")]
+        //[Authorize(Roles = "Customer")]
+        [Authorize]
+        public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
 
-            var sub = await _subService.CreateSubscriptionAsync(request, tenantId);
-            return CreatedAtAction(nameof(GetById), new { id = sub.SubscriptionId }, sub);
+            var sub = await _subService.CreatePendingSubscriptionAsync(request.PlanId, userId);
+            return Ok(sub);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("pending")]
+        //[Authorize(Roles = "Admin,Staff")]
+        [Authorize]
+        public async Task<IActionResult> GetPending()
+        {
+            var subs = await _subService.GetPendingAsync();
+            return Ok(subs);
+        }
+
+        [HttpGet]
+        //[Authorize(Roles = "Admin")]
+        [Authorize]
+        public async Task<IActionResult> GetAll()
+        {
+            var subs = await _subService.GetAllAsync();
+            return Ok(subs);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             var sub = await _subService.GetByIdAsync(id);
-            if (sub == null) return NotFound();
+            if (sub == null)
+                return NotFound(new { Message = "Subscription not found." });
+
             return Ok(sub);
         }
 
-        [HttpGet("tenant/{tenantId:int}")]
-        public async Task<IActionResult> GetByTenant(int tenantId)
+        [HttpPatch("{id}/status")]
+        //[Authorize(Roles = "Admin,Staff")]
+        [Authorize]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateSubscriptionRequest request)
         {
-            var list = await _subService.GetByTenantAsync(tenantId);
-            return Ok(list);
-        }
+            var sub = await _subService.UpdateStatusAsync(id, request.Status!);
+            if (sub == null)
+                return NotFound(new { Message = "Subscription not found." });
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateSubscriptionRequest dto)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var sub = await _subService.UpdateAsync(id, dto);
-            if (sub == null) return NotFound();
             return Ok(sub);
         }
 
-        [HttpPost("{id:int}/cancel")]
-        public async Task<IActionResult> Cancel(int id)
+        [HttpGet("me")]
+        //[Authorize(Roles = "Customer")]
+        [Authorize]
+        public async Task<IActionResult> GetMySubscription()
         {
-            var result = await _subService.CancelAsync(id);
-            if (!result) return NotFound();
-            return Ok(new { Message = "Subscription cancelled" });
-        }
+            var info = await _subService.GetCurrentUserSubscriptionAsync();
+            if (info == null)
+                return NotFound(new { Message = "You have no active subscription." });
 
-        // -----------------------
-        // Subscription Keys
-        // -----------------------
-
-        [HttpGet("{id:int}/key")]
-        public async Task<IActionResult> GetKeys(int id)
-        {
-            var keys = await _keyService.GetKeysAsync(id);
-            if (!keys.Any())
-                return NotFound(new { Message = "No keys found for this subscription" });
-
-            return Ok(keys.Select(k => new SubscriptionKeyDto
-            {
-                KeyValue = k.KeyValue,
-                CreatedAt = k.CreatedAt,
-                IsActive = k.IsActive
-            }));
-        }
-
-        [HttpPost("{id:int}/key/regenerate")]
-        public async Task<IActionResult> RegenerateKey(int id)
-        {
-            var newKey = await _keyService.GenerateKeyAsync(id, deactivateOld: true);
-            return Ok(new { SubscriptionId = id, ApiKey = newKey });
+            return Ok(info);
         }
     }
 }

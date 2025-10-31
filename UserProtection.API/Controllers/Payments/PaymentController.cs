@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Dtos.Payments;
 using UserProtection.Application.Interfaces.Payments;
-using UserProtection.Infrastructure.Helpers;
 
 namespace UserProtection.API.Controllers.Payments
 {
@@ -10,51 +10,67 @@ namespace UserProtection.API.Controllers.Payments
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
-        private readonly VnPayHelper _vnPayHelper;
 
-        public PaymentController(IPaymentService paymentService, VnPayHelper vnPayHelper)
+        public PaymentController(IPaymentService paymentService)
         {
             _paymentService = paymentService;
-            _vnPayHelper = vnPayHelper;
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentRequestDto request)
+        [HttpPost("vnpay")]
+        //[Authorize(Roles = "Customer")]
+        [Authorize]
+        public async Task<IActionResult> CreateVNPayPayment([FromBody] PaymentRequestDto request)
         {
-            if (request == null || request.SubscriptionId <= 0)
-                return BadRequest(new { Message = "Invalid request" });
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var response = await _paymentService.CreatePaymentAsync(request);
-            return Ok(response);
+            var result = await _paymentService.CreatePaymentAsync(request);
+            return Ok(result);
         }
 
-        [HttpGet("callback")]
-        public async Task<IActionResult> Callback()
+        [HttpPost("callback")]
+        //[AllowAnonymous]
+        [Authorize]
+        public async Task<IActionResult> VNPayCallback([FromBody] PaymentCallbackDto callback)
         {
-            var query = Request.Query;
-            if (!_vnPayHelper.ValidateSignature(query))
-                return BadRequest(new { Message = "Invalid signature" });
-
-            var orderInfo = query["vnp_OrderInfo"].ToString();
-            if (!orderInfo.StartsWith("SubId="))
-                return BadRequest(new { Message = "Invalid OrderInfo format" });
-
-            var subscriptionId = int.Parse(orderInfo.Replace("SubId=", ""));
-            var callback = new PaymentCallbackDto
-            {
-                TransactionId = query["vnp_TxnRef"].ToString(),
-                Status = query["vnp_ResponseCode"] == "00" ? "Success" : "Failed",
-                SubscriptionId = subscriptionId
-            };
-
             var result = await _paymentService.HandleCallbackAsync(callback);
             if (result == null)
-                return NotFound(new { Message = "Payment or subscription not found" });
+                return NotFound(new { Message = "Invalid transaction." });
 
-            var payment = await _paymentService.GetByTransactionIdAsync(callback.TransactionId);
-            var feUrl = payment?.FrontendReturnUrl ?? "https://myfrontend.com/payment/result";
+            return Ok(result);
+        }
 
-            return Redirect($"{feUrl}?status={result.Status}&subscriptionId={result.SubscriptionId}&txnId={result.TransactionId}&apiKey={result.ApiKey}");
+        [HttpPost("manual")]
+        //[Authorize(Roles = "Admin,Staff")]
+        [Authorize]
+        public async Task<IActionResult> CreateManualPayment([FromBody] ManualPaymentRequestDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _paymentService.CreateManualPaymentAsync(request);
+            return CreatedAtAction(nameof(GetByTransactionId), new { txnId = result.TransactionId }, result);
+        }
+
+        [HttpGet("{txnId}")]
+        //[Authorize(Roles = "Admin,Staff,Customer")]
+        [Authorize]
+        public async Task<IActionResult> GetByTransactionId(string txnId)
+        {
+            var payment = await _paymentService.GetByTransactionIdAsync(txnId);
+            if (payment == null)
+                return NotFound(new { Message = "Payment not found." });
+
+            return Ok(new
+            {
+                payment.PaymentId,
+                payment.SubscriptionId,
+                payment.Amount,
+                payment.Status,
+                payment.PaymentMethod,
+                payment.TransactionId,
+                payment.PaymentDate
+            });
         }
     }
 }

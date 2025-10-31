@@ -1,28 +1,46 @@
-﻿namespace UserProtection.Application.Dtos.Payments;
-
-public class PaymentRequestDto
+﻿namespace UserProtection.Application.Dtos.Payments
 {
-    public int SubscriptionId { get; set; }
-    public string ReturnUrl { get; set; } = null!;
-}
+    public class PaymentRequestDto
+    {
+        public int SubscriptionId { get; set; }
+        public string ReturnUrl { get; set; } = string.Empty;
+    }
 
-public class PaymentResponseDto
-{
-    public string PaymentUrl { get; set; } = null!;
-}
+    public class PaymentResponseDto
+    {
+        public string PaymentUrl { get; set; } = string.Empty;
+    }
 
-public class PaymentCallbackDto
-{
-    public string TransactionId { get; set; } = null!;
-    public string Status { get; set; } = null!; // "Success" | "Failed"
-    public int SubscriptionId { get; set; }
-}
+    public class PaymentCallbackDto
+    {
+        public string TransactionId { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+    }
 
-public class PaymentResultDto
-{
-    public string TransactionId { get; set; } = null!;
-    public int SubscriptionId { get; set; }
-    public string Status { get; set; } = null!;
-    public string? ApiKey { get; set; }
-}
+    public class PaymentResultDto
+    {
+        public string TransactionId { get; set; } = string.Empty;
+        public int SubscriptionId { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string? ApiKey { get; set; }
+    }
 
+    public class ManualPaymentRequestDto
+    {
+        public int SubscriptionId { get; set; }
+        public decimal Amount { get; set; }
+        public string PaymentMethod { get; set; } = "Cash";
+        public string Status { get; set; } = "Succeeded";
+        public string? TransactionId { get; set; }
+    }
+
+    public class ManualPaymentResponseDto
+    {
+        public int PaymentId { get; set; }
+        public int SubscriptionId { get; set; }
+        public decimal Amount { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime PaymentDate { get; set; }
+        public string TransactionId { get; set; } = string.Empty;
+    }
+}

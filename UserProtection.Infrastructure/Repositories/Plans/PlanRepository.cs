@@ -34,5 +34,15 @@ namespace UserProtection.Infrastructure.Repositories.Plans
                 .Include(p => p.PlanCourses).ThenInclude(pc => pc.Course)
                 .Include(p => p.PlanFeatures).ThenInclude(pf => pf.Feature)
                 .FirstOrDefaultAsync(p => p.PlanId == planId && p.IsActive);
+
+        public async Task<Plan?> GetByIdAsync(int planId)
+        {
+            return await _context.Plans
+                .Include(p => p.PlanFeatures)
+                    .ThenInclude(pf => pf.Feature)
+                .Include(p => p.PlanCourses)
+                    .ThenInclude(pc => pc.Course)
+                .FirstOrDefaultAsync(p => p.PlanId == planId);
+        }
     }
 }

@@ -103,5 +103,52 @@ namespace UserProtection.Application.Services.Payments
         {
             return await _paymentRepo.GetByTransactionIdAsync(txnId);
         }
+
+        public async Task<ManualPaymentResponseDto> CreateManualPaymentAsync(ManualPaymentRequestDto request)
+        {
+            var subscription = await _subRepo.GetByIdAsync(request.SubscriptionId);
+            if (subscription == null)
+                throw new Exception($"Subscription {request.SubscriptionId} not found.");
+
+            var payment = new Payment
+            {
+                SubscriptionId = subscription.SubscriptionId,
+                Amount = request.Amount,
+                PaymentMethod = request.PaymentMethod,
+                Status = request.Status,
+                PaymentDate = DateTime.UtcNow,
+                TransactionId = request.TransactionId ?? $"MANUAL-{Guid.NewGuid():N}",
+                FrontendReturnUrl = null
+            };
+
+            await _paymentRepo.AddAsync(payment);
+
+            // Nếu đơn thành công → kích hoạt gói
+            if (request.Status.Equals(PaymentStatus.Succeeded, StringComparison.OrdinalIgnoreCase))
+            {
+                subscription.Status = SubscriptionStatus.Active;
+                subscription.StartDate = DateTime.UtcNow;
+                subscription.EndDate = subscription.Plan.BillingCycle.ToLower() switch
+                {
+                    "monthly" => subscription.StartDate.AddMonths(1),
+                    "yearly" => subscription.StartDate.AddYears(1),
+                    _ => subscription.StartDate.AddMonths(1)
+                };
+
+                await _keyService.GenerateKeyAsync(subscription.SubscriptionId, deactivateOld: true);
+            }
+
+            await _paymentRepo.SaveChangesAsync();
+
+            return new ManualPaymentResponseDto
+            {
+                PaymentId = payment.PaymentId,
+                SubscriptionId = payment.SubscriptionId,
+                Amount = payment.Amount,
+                Status = payment.Status,
+                PaymentDate = payment.PaymentDate,
+                TransactionId = payment.TransactionId
+            };
+        }
     }
 }

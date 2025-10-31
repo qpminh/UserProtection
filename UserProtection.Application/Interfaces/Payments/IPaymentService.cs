@@ -8,5 +8,6 @@ namespace UserProtection.Application.Interfaces.Payments
         Task<PaymentResponseDto> CreatePaymentAsync(PaymentRequestDto request);
         Task<PaymentResultDto?> HandleCallbackAsync(PaymentCallbackDto callback);
         Task<Payment?> GetByTransactionIdAsync(string txnId);
+        Task<ManualPaymentResponseDto> CreateManualPaymentAsync(ManualPaymentRequestDto request);
     }
 }

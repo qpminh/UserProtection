@@ -9,4 +9,5 @@ public interface IPlanRepository
     Task<Plan?> GetPlanWithCoursesAsync(int planId);
     Task<Plan?> GetPlanWithFeaturesAsync(int planId);
     Task<Plan?> GetPlanDetailsAsync(int planId);
+    Task<Plan?> GetByIdAsync(int planId);
 }

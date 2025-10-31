@@ -10,5 +10,9 @@ namespace UserProtection.Infrastructure.Interfaces.Subscriptions
         void Update(Subscription subscription);
         void Delete(Subscription subscription);
         Task SaveChangesAsync();
+        Task<Subscription?> GetLatestByUserAsync(string userId);
+        Task<Subscription?> GetActiveByUserAsync(string userId);
+        Task<IEnumerable<Subscription>> GetByStatusAsync(string status);
+        Task<IEnumerable<Subscription>> GetAllAsync();
     }
 }

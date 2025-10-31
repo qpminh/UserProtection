@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UserProtection.Domain.Constants;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces.Subscriptions;
 
@@ -32,5 +33,33 @@ namespace UserProtection.Infrastructure.Repositories.Subscriptions
 
         public async Task SaveChangesAsync() =>
             await _context.SaveChangesAsync();
+
+        public async Task<Subscription?> GetLatestByUserAsync(string userId)
+        {
+            return await _context.Subscriptions
+                .Include(s => s.Plan)
+                    .ThenInclude(p => p.PlanFeatures)
+                        .ThenInclude(pf => pf.Feature)
+                .Where(s => s.UserId == userId)
+                .OrderByDescending(s => s.StartDate)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Subscription?> GetActiveByUserAsync(string userId) =>
+    await _context.Subscriptions
+        .Include(s => s.Plan)
+        .FirstOrDefaultAsync(s => s.UserId == userId && s.Status == SubscriptionStatus.Active);
+
+        public async Task<IEnumerable<Subscription>> GetByStatusAsync(string status) =>
+            await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Where(s => s.Status == status)
+                .ToListAsync();
+
+        public async Task<IEnumerable<Subscription>> GetAllAsync() =>
+            await _context.Subscriptions
+                .Include(s => s.Plan)
+                .AsNoTracking()
+                .ToListAsync();
     }
 }
