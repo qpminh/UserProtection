@@ -150,5 +150,47 @@ namespace UserProtection.Application.Services.Payments
                 TransactionId = payment.TransactionId
             };
         }
+
+        public async Task<ManualPaymentResponseDto?> UpdatePaymentStatusAsync(int paymentId, string newStatus)
+        {
+            var payment = await _paymentRepo.GetByIdAsync(paymentId);
+            if (payment == null) return null;
+
+            payment.Status = newStatus;
+            payment.PaymentDate = DateTime.UtcNow;
+
+            var subscription = payment.Subscription;
+
+            // Nếu thanh toán thành công → kích hoạt Subscription
+            if (newStatus.Equals(PaymentStatus.Succeeded, StringComparison.OrdinalIgnoreCase))
+            {
+                subscription.Status = SubscriptionStatus.Active;
+                subscription.StartDate = DateTime.UtcNow;
+                subscription.EndDate = subscription.Plan.BillingCycle.ToLower() switch
+                {
+                    "monthly" => subscription.StartDate.AddMonths(1),
+                    "yearly" => subscription.StartDate.AddYears(1),
+                    _ => subscription.StartDate.AddMonths(1)
+                };
+
+                await _keyService.GenerateKeyAsync(subscription.SubscriptionId, deactivateOld: true);
+            }
+            else if (newStatus.Equals(PaymentStatus.Failed, StringComparison.OrdinalIgnoreCase))
+            {
+                subscription.Status = SubscriptionStatus.Pending;
+            }
+
+            await _paymentRepo.SaveChangesAsync();
+
+            return new ManualPaymentResponseDto
+            {
+                PaymentId = payment.PaymentId,
+                SubscriptionId = payment.SubscriptionId,
+                Amount = payment.Amount,
+                Status = payment.Status,
+                PaymentDate = payment.PaymentDate,
+                TransactionId = payment.TransactionId
+            };
+        }
     }
 }

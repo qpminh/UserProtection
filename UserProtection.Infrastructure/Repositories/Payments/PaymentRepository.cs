@@ -19,5 +19,13 @@ namespace UserProtection.Infrastructure.Repositories.Payments
 
         public async Task SaveChangesAsync() =>
             await _context.SaveChangesAsync();
+
+        public async Task<Payment?> GetByIdAsync(int paymentId)
+        {
+            return await _context.Payments
+                .Include(p => p.Subscription)
+                .ThenInclude(s => s.Plan)
+                .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
+        }
     }
 }

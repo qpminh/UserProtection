@@ -7,5 +7,6 @@ namespace UserProtection.Infrastructure.Interfaces.Payments
         Task AddAsync(Payment payment);
         Task<Payment?> GetByTransactionIdAsync(string transactionId);
         Task SaveChangesAsync();
+        Task<Payment?> GetByIdAsync(int paymentId);
     }
 }

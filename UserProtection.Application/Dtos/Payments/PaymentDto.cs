@@ -43,4 +43,9 @@
         public DateTime PaymentDate { get; set; }
         public string TransactionId { get; set; } = string.Empty;
     }
+
+    public class UpdatePaymentStatusRequest
+    {
+        public string Status { get; set; } = string.Empty; // "Succeeded" | "Failed"
+    }
 }

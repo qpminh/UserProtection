@@ -56,11 +56,18 @@ namespace UserProtection.Application.Mappers
             CreateMap<CreatePlanRequest, Plan>();
 
             // Subscription
-            CreateMap<Subscription, SubscriptionDto>();
+            // Subscription
+            CreateMap<Subscription, SubscriptionDto>()
+                .ForMember(dest => dest.Payment,
+                    opt => opt.MapFrom(src => src.Payments
+                        .OrderByDescending(p => p.PaymentDate)
+                        .FirstOrDefault())); // lấy payment mới nhất
             CreateMap<CreateSubscriptionRequest, Subscription>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Pending"))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.AutoRenew, opt => opt.MapFrom(_ => false));
+
+            CreateMap<Payment, PaymentSummaryDto>();
 
             // Tenant
             CreateMap<Tenant, TenantDto>();

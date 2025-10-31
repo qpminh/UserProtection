@@ -6,6 +6,7 @@ using UserProtection.Application.Interfaces.Cores;
 using UserProtection.Application.Interfaces.Subscriptions;
 using UserProtection.Domain.Constants;
 using UserProtection.Domain.Entities;
+using UserProtection.Infrastructure.Interfaces.Payments;
 using UserProtection.Infrastructure.Interfaces.Plans;
 using UserProtection.Infrastructure.Interfaces.Subscriptions;
 
@@ -15,6 +16,7 @@ namespace UserProtection.Application.Services.Subscriptions
     {
         private readonly ISubscriptionRepository _subRepo;
         private readonly IPlanRepository _planRepo;
+        private readonly IPaymentRepository _paymentRepo;
         private readonly ICurrentUserService _currentUserService;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
@@ -22,19 +24,24 @@ namespace UserProtection.Application.Services.Subscriptions
         public SubscriptionService(
             ISubscriptionRepository subRepo,
             IPlanRepository planRepo,
+            IPaymentRepository paymentRepo,
             ICurrentUserService currentUserService,
             UserManager<User> userManager,
             IMapper mapper)
         {
             _subRepo = subRepo;
             _planRepo = planRepo;
+            _paymentRepo = paymentRepo;
             _currentUserService = currentUserService;
             _userManager = userManager;
             _mapper = mapper;
         }
 
-        public async Task<SubscriptionDto> CreatePendingSubscriptionAsync(int planId, string userId)
+        public async Task<SubscriptionDto> CreatePendingSubscriptionAsync(int planId, string? userId = null)
         {
+            userId ??= _currentUserService.UserId
+                ?? throw new UnauthorizedAccessException("User not authenticated.");
+
             var plan = await _planRepo.GetByIdAsync(planId)
                 ?? throw new Exception("Invalid plan.");
 
@@ -56,6 +63,21 @@ namespace UserProtection.Application.Services.Subscriptions
 
             await _subRepo.AddAsync(sub);
             await _subRepo.SaveChangesAsync();
+
+            var payment = new Payment
+            {
+                SubscriptionId = sub.SubscriptionId,
+                Amount = plan.Price,
+                PaymentMethod = "Cash",
+                Status = PaymentStatus.Pending,
+                PaymentDate = DateTime.UtcNow,
+                TransactionId = $"PENDING-{Guid.NewGuid():N}"
+            };
+
+            await _paymentRepo.AddAsync(payment);
+            await _paymentRepo.SaveChangesAsync();
+
+            sub.Payments = new List<Payment> { payment };
 
             return _mapper.Map<SubscriptionDto>(sub);
         }
@@ -85,7 +107,6 @@ namespace UserProtection.Application.Services.Subscriptions
 
             sub.Status = status;
 
-            // Nếu được kích hoạt, set ngày bắt đầu & hết hạn
             if (status.Equals(SubscriptionStatus.Active, StringComparison.OrdinalIgnoreCase))
             {
                 var plan = await _planRepo.GetByIdAsync(sub.PlanId);
@@ -106,19 +127,35 @@ namespace UserProtection.Application.Services.Subscriptions
 
         public async Task<UserSubscriptionInfoDto?> GetUserSubscriptionInfoAsync(string userId)
         {
-            var subscription = await _subRepo.GetLatestByUserAsync(userId);
-            if (subscription == null) return null;
+            var subscriptions = await _subRepo.GetAllByUserAsync(userId);
+            if (subscriptions == null || !subscriptions.Any())
+                return null;
 
-            return new UserSubscriptionInfoDto
+            var result = new UserSubscriptionInfoDto
             {
                 UserId = userId,
-                PlanName = subscription.Plan.Name,
-                PlanDescription = subscription.Plan.Description,
-                Status = subscription.Status,
-                StartDate = subscription.StartDate,
-                EndDate = subscription.EndDate,
-                Features = subscription.Plan.PlanFeatures.Select(f => f.Feature.Name).ToList()
+                Subscriptions = subscriptions.Select(s => new UserSubscriptionDetailDto
+                {
+                    SubscriptionId = s.SubscriptionId,
+                    PlanName = s.Plan.Name,
+                    PlanDescription = s.Plan.Description,
+                    Status = s.Status,
+                    StartDate = s.StartDate,
+                    EndDate = s.EndDate,
+                    Features = s.Plan.PlanFeatures.Select(f => f.Feature.Name).ToList(),
+                    Payments = s.Payments.Select(p => new UserPaymentDto
+                    {
+                        PaymentId = p.PaymentId,
+                        Amount = p.Amount,
+                        PaymentMethod = p.PaymentMethod,
+                        Status = p.Status,
+                        PaymentDate = p.PaymentDate,
+                        TransactionId = p.TransactionId
+                    }).OrderByDescending(p => p.PaymentDate).ToList()
+                }).OrderByDescending(s => s.StartDate).ToList()
             };
+
+            return result;
         }
 
         public async Task<UserSubscriptionInfoDto?> GetCurrentUserSubscriptionAsync()

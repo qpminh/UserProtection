@@ -72,5 +72,17 @@ namespace UserProtection.API.Controllers.Payments
                 payment.PaymentDate
             });
         }
+
+        [HttpPut("{paymentId}/status")]
+        //[Authorize(Roles = "Staff,Admin")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePaymentStatus(int paymentId, [FromBody] UpdatePaymentStatusRequest request)
+        {
+            var result = await _paymentService.UpdatePaymentStatusAsync(paymentId, request.Status);
+            if (result == null)
+                return NotFound(new { Message = "Payment not found." });
+
+            return Ok(result);
+        }
     }
 }
