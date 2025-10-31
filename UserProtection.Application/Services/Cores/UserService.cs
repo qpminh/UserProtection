@@ -103,13 +103,30 @@ namespace UserProtection.Application.Services.Cores
 
         private string GenerateJwtToken(User user)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-                new Claim("tenantId", user.TenantId?.ToString() ?? "")
+                new Claim("userId", user.Id), 
+                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+                new Claim("tenantId", user.TenantId?.ToString() ?? string.Empty)
             };
+
+            if (!string.IsNullOrEmpty(user.FirstName))
+                claims.Add(new Claim("firstName", user.FirstName));
+
+            if (!string.IsNullOrEmpty(user.LastName))
+                claims.Add(new Claim("lastName", user.LastName));
+
+            if (!string.IsNullOrEmpty(user.PhoneNumber))
+                claims.Add(new Claim("phoneNumber", user.PhoneNumber));
+
+            if (user.Tenant != null)
+            {
+                claims.Add(new Claim("tenantName", user.Tenant.CompanyName));
+                if (!string.IsNullOrEmpty(user.Tenant.Domain))
+                    claims.Add(new Claim("tenantDomain", user.Tenant.Domain));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -119,7 +136,8 @@ namespace UserProtection.Application.Services.Cores
                 audience: _config["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(_config["Jwt:ExpireMinutes"])),
-                signingCredentials: creds);
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
