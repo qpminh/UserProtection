@@ -14,48 +14,48 @@
 
     autoDeploy: true
 
-    # envVars:
-    #   - key: ASPNETCORE_ENVIRONMENT
-    #     value: Production
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
 
-    #   ===== Database =====
-    #   - key: ConnectionStrings__DefaultConnection
-    #     value: Host=dpg-d3j83mvfte5s73f683cg-a.singapore-postgres.render.com;Port=5432;Database=userprotection;Username=userprotection_user;Password=7gUoTSnDGGtkVnSCmkKfqbqgVKaOxlch;Ssl Mode=Require;Trust Server Certificate=true
+      # ===== Database =====
+      - key: ConnectionStrings__DefaultConnection
+        value: User Id=postgres.ecaiijvvzmhozfgwfkrw;Password=ZFOwrMATMDFbkbUY;Server=aws-1-ap-southeast-1.pooler.supabase.com;Port=5432;Database=postgres;Ssl Mode=Require;Trust Server Certificate=true
 
-    #   ===== JWT =====
-    #   - key: Jwt__Key
-    #     value: 6874c8449aa547f5323381922fb21d67
-    #   - key: Jwt__Issuer
-    #     value: userProtection
-    #   - key: Jwt__Audience
-    #     value: userProtectionClient
+      # ===== JWT =====
+      - key: Jwt__Key
+        value: 6874c8449aa547f5323381922fb21d67
+      - key: Jwt__Issuer
+        value: userProtection
+      - key: Jwt__Audience
+        value: userProtectionClient
 
-    #   ===== VNPay =====
-    #   - key: VnPay__TmnCode
-    #     value: X4OCURNS
-    #   - key: VnPay__HashSecret
-    #     value: 31VDDFEE2TFIIBLEETLOK5ZB704FTK84
-    #   - key: VnPay__VnpUrl
-    #     value: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-    #   - key: VnPay__ReturnUrl
-    #     value: https://userprotection-api.onrender.com/api/payment/callback
+      # ===== VNPay =====
+      - key: VnPay__TmnCode
+        value: X4OCURNS
+      - key: VnPay__HashSecret
+        value: 31VDDFEE2TFIIBLEETLOK5ZB704FTK84
+      - key: VnPay__VnpUrl
+        value: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      - key: VnPay__ReturnUrl
+        value: https://userprotection-api.onrender.com/api/payment/callback
 
-    #   ===== Gemini API =====
-    #   - key: Gemini__ApiKey
-    #     value: AIzaSyDN_8x9DAGPPUFjlmOXDVSJ2rCWImsL-uo
+      # ===== Gemini API =====
+      - key: Gemini__ApiKey
+        value: AIzaSyDN_8x9DAGPPUFjlmOXDVSJ2rCWImsL-uo
 
-    #   ===== Default Admin =====
-    #   - key: DefaultAdmin__Username
-    #     value: admin
-    #   - key: DefaultAdmin__Password
-    #     value: Admin@123!
-    #   - key: DefaultAdmin__Email
-    #     value: admin@gmail.com
-    #   - key: DefaultAdmin__FirstName
-    #     value: System
-    #   - key: DefaultAdmin__LastName
-    #     value: Admin
-    #   - key: DefaultAdmin__PhoneNumber
-    #     value: 0123456789
-    #   - key: DefaultAdmin__Role
-    #     value: Admin
+      # ===== Default Admin =====
+      - key: DefaultAdmin__Username
+        value: admin
+      - key: DefaultAdmin__Password
+        value: Admin@123!
+      - key: DefaultAdmin__Email
+        value: admin@gmail.com
+      - key: DefaultAdmin__FirstName
+        value: System
+      - key: DefaultAdmin__LastName
+        value: Admin
+      - key: DefaultAdmin__PhoneNumber
+        value: 0123456789
+      - key: DefaultAdmin__Role
+        value: Admin
