@@ -18,6 +18,8 @@ namespace UserProtection.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration["Gemini:ApiKey"] = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
+
             // Add controllers
             builder.Services.AddControllers();
 
