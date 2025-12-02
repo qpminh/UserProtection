@@ -14,6 +14,13 @@ namespace UserProtection.API.Middlewares
 
         public async Task InvokeAsync(HttpContext context, UserProtectionContext db)
         {
+            if (context.Request.Method == HttpMethods.Head ||
+                context.Request.Path.StartsWithSegments("/health"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!context.Request.Headers.TryGetValue("Authorization", out var authHeader))
             {
                 await _next(context);
@@ -22,14 +29,12 @@ namespace UserProtection.API.Middlewares
 
             var value = authHeader.ToString();
 
-            // Nếu là JWT Bearer token -> bỏ qua để JwtMiddleware xử lý
             if (value.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
                 await _next(context);
                 return;
             }
 
-            // Nếu là ApiKey
             if (value.StartsWith("ApiKey ", StringComparison.OrdinalIgnoreCase))
             {
                 var apiKey = value.Substring("ApiKey ".Length).Trim();

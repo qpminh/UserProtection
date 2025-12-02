@@ -165,6 +165,19 @@ namespace UserProtection.API
 
             app.MapMethods("/health", new[] { "GET", "HEAD" }, () => Results.Ok("Healthy"));
 
+            app.MapGet("/health-db", async (UserProtectionContext db) =>
+            {
+                try
+                {
+                    var isDbAlive = await db.Database.CanConnectAsync();
+                    return Results.Ok(new { db = isDbAlive });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
             app.Run();
         }
     }
