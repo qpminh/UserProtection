@@ -163,7 +163,7 @@ namespace UserProtection.API
 
             app.MapControllers();
 
-            app.MapGet("/health", () => Results.Ok("Healthy ✅"));
+            app.MapMethods("/health", new[] { "GET", "HEAD" }, () => Results.Ok("Healthy"));
 
             app.Run();
         }
