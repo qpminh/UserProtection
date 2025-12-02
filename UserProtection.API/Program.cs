@@ -165,7 +165,7 @@ namespace UserProtection.API
 
             app.MapMethods("/health", new[] { "GET", "HEAD" }, () => Results.Ok("Healthy"));
 
-            app.MapGet("/health-db", async (UserProtectionContext db) =>
+            app.MapMethods("/health-db", new[] { "GET", "HEAD" }, async (UserProtectionContext db) =>
             {
                 try
                 {
