@@ -39,14 +39,19 @@ namespace UserProtection.Application.Services.Subscriptions
 
         public async Task<SubscriptionDto> CreatePendingSubscriptionAsync(int planId, string? userId = null)
         {
-            userId ??= _currentUserService.UserId
-                ?? throw new UnauthorizedAccessException("User not authenticated.");
+            userId ??= _currentUserService.UserId;
+            if (userId == null)
+                throw new UnauthorizedAccessException("User not authenticated.");
 
             var plan = await _planRepo.GetByIdAsync(planId)
                 ?? throw new Exception("Invalid plan.");
 
-            var user = await _userManager.FindByIdAsync(userId)
-                ?? throw new Exception("User not found.");
+            if (userId != "ADMIN-FIXED-ID")
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                    throw new Exception("User not found.");
+            }
 
             var existing = await _subRepo.GetActiveByUserAsync(userId);
             if (existing != null)
@@ -102,8 +107,9 @@ namespace UserProtection.Application.Services.Subscriptions
 
         public async Task<SubscriptionDto?> UpdateStatusAsync(int id, string status)
         {
-            var sub = await _subRepo.GetByIdAsync(id);
-            if (sub == null) return null;
+            var sub = await _subRepo.GetByIdForUpdateAsync(id);
+            if (sub == null)
+                return null;
 
             sub.Status = status;
 
@@ -131,7 +137,7 @@ namespace UserProtection.Application.Services.Subscriptions
             if (subscriptions == null || !subscriptions.Any())
                 return null;
 
-            var result = new UserSubscriptionInfoDto
+            return new UserSubscriptionInfoDto
             {
                 UserId = userId,
                 Subscriptions = subscriptions.Select(s => new UserSubscriptionDetailDto
@@ -154,8 +160,6 @@ namespace UserProtection.Application.Services.Subscriptions
                     }).OrderByDescending(p => p.PaymentDate).ToList()
                 }).OrderByDescending(s => s.StartDate).ToList()
             };
-
-            return result;
         }
 
         public async Task<UserSubscriptionInfoDto?> GetCurrentUserSubscriptionAsync()

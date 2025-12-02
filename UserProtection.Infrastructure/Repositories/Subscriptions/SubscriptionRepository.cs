@@ -25,10 +25,16 @@ namespace UserProtection.Infrastructure.Repositories.Subscriptions
         public async Task<Subscription?> GetByIdAsync(int id) =>
             await _context.Subscriptions
                 .Include(s => s.Plan)
-                .ThenInclude(p => p.PlanFeatures)
-                    .ThenInclude(pf => pf.Feature)
+                    .ThenInclude(p => p.PlanFeatures)
+                        .ThenInclude(pf => pf.Feature)
                 .Include(s => s.Payments)
                 .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.SubscriptionId == id);
+
+        public async Task<Subscription?> GetByIdForUpdateAsync(int id) =>
+            await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Include(s => s.Payments)
                 .FirstOrDefaultAsync(s => s.SubscriptionId == id);
 
         public async Task<IEnumerable<Subscription>> GetAllAsync() =>
@@ -67,11 +73,11 @@ namespace UserProtection.Infrastructure.Repositories.Subscriptions
                 .Include(s => s.Plan)
                 .Include(s => s.Payments)
                 .Where(s => s.Status == status)
+                .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<IEnumerable<Subscription>> GetAllByUserAsync(string userId)
-        {
-            return await _context.Subscriptions
+        public async Task<IEnumerable<Subscription>> GetAllByUserAsync(string userId) =>
+            await _context.Subscriptions
                 .Include(s => s.Plan)
                     .ThenInclude(p => p.PlanFeatures)
                         .ThenInclude(pf => pf.Feature)
@@ -80,6 +86,5 @@ namespace UserProtection.Infrastructure.Repositories.Subscriptions
                 .OrderByDescending(s => s.StartDate)
                 .AsNoTracking()
                 .ToListAsync();
-        }
     }
 }

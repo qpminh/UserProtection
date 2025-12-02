@@ -20,19 +20,18 @@ namespace UserProtection.API.Controllers.Subscriptions
         }
 
         [HttpPost("create")]
-        //[Authorize(Roles = "Customer")]
         [Authorize]
         public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
         {
             var userId = _currentUserService.UserId;
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+                return Unauthorized();
 
             var sub = await _subService.CreatePendingSubscriptionAsync(request.PlanId, userId);
             return Ok(sub);
         }
 
         [HttpGet("pending")]
-        //[Authorize(Roles = "Admin,Staff")]
         [Authorize]
         public async Task<IActionResult> GetPending()
         {
@@ -41,7 +40,6 @@ namespace UserProtection.API.Controllers.Subscriptions
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
         [Authorize]
         public async Task<IActionResult> GetAll()
         {
@@ -61,7 +59,6 @@ namespace UserProtection.API.Controllers.Subscriptions
         }
 
         [HttpPatch("{id}/status")]
-        //[Authorize(Roles = "Admin,Staff")]
         [Authorize]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateSubscriptionRequest request)
         {
@@ -73,7 +70,6 @@ namespace UserProtection.API.Controllers.Subscriptions
         }
 
         [HttpGet("me")]
-        //[Authorize(Roles = "Customer")]
         [Authorize]
         public async Task<IActionResult> GetMySubscription()
         {

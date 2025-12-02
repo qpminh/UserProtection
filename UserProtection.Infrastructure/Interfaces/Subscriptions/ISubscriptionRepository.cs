@@ -15,5 +15,6 @@ namespace UserProtection.Infrastructure.Interfaces.Subscriptions
         Task<IEnumerable<Subscription>> GetByStatusAsync(string status);
         Task<IEnumerable<Subscription>> GetAllByUserAsync(string userId);
         Task<IEnumerable<Subscription>> GetAllAsync();
+        Task<Subscription?> GetByIdForUpdateAsync(int id);
     }
 }

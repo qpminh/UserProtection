@@ -39,6 +39,7 @@ namespace UserProtection.Application.Dependency
             // Core
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IAppAdminConfigService, AppAdminConfigService>();
 
             // Subscription
             services.AddScoped<ISubscriptionService, SubscriptionService>();
