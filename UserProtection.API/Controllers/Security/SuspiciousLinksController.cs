@@ -12,6 +12,7 @@ namespace UserProtection.API.Controllers.Security
     public class SuspiciousLinksController : ControllerBase
     {
         private readonly ISuspiciousLinkService _svc;
+
         public SuspiciousLinksController(ISuspiciousLinkService svc) { _svc = svc; }
 
         // Extension reports
@@ -55,10 +56,10 @@ namespace UserProtection.API.Controllers.Security
         }
 
         [HttpPut]
-        public async Task Update(SuspiciousLink entity)
+        public async Task Update(SuspiciousLink entity, int suspiciousId)
         {
+            entity.SuspiciousId = suspiciousId;
             await _svc.Update(entity);
         }
     }
-
 }
