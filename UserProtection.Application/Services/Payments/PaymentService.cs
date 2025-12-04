@@ -123,7 +123,6 @@ namespace UserProtection.Application.Services.Payments
 
             await _paymentRepo.AddAsync(payment);
 
-            // Nếu đơn thành công → kích hoạt gói
             if (request.Status.Equals(PaymentStatus.Succeeded, StringComparison.OrdinalIgnoreCase))
             {
                 subscription.Status = SubscriptionStatus.Active;
@@ -161,7 +160,6 @@ namespace UserProtection.Application.Services.Payments
 
             var subscription = payment.Subscription;
 
-            // Nếu thanh toán thành công → kích hoạt Subscription
             if (newStatus.Equals(PaymentStatus.Succeeded, StringComparison.OrdinalIgnoreCase))
             {
                 subscription.Status = SubscriptionStatus.Active;

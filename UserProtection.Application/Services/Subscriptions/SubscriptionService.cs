@@ -39,28 +39,32 @@ namespace UserProtection.Application.Services.Subscriptions
 
         public async Task<SubscriptionDto> CreatePendingSubscriptionAsync(int planId, string? userId = null)
         {
-            userId ??= _currentUserService.UserId;
-            if (userId == null)
+            var targetUserId = !string.IsNullOrWhiteSpace(userId)
+                ? userId
+                : _currentUserService.UserId;
+
+            if (string.IsNullOrWhiteSpace(targetUserId))
                 throw new UnauthorizedAccessException("User not authenticated.");
+
+            var user = await _userManager.FindByIdAsync(targetUserId);
+            if (user == null)
+                throw new Exception($"User not found with id: {targetUserId}");
 
             var plan = await _planRepo.GetByIdAsync(planId)
                 ?? throw new Exception("Invalid plan.");
 
-            if (userId != "ADMIN-FIXED-ID")
-            {
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
-                    throw new Exception("User not found.");
-            }
-
-            var existing = await _subRepo.GetActiveByUserAsync(userId);
-            if (existing != null)
+            var active = await _subRepo.GetActiveByUserAsync(targetUserId);
+            if (active != null)
                 throw new InvalidOperationException("User already has an active subscription.");
+
+            var pending = await _subRepo.GetPendingByUserAsync(targetUserId);
+            if (pending != null)
+                throw new InvalidOperationException("User already has a pending subscription.");
 
             var sub = new Subscription
             {
                 PlanId = plan.PlanId,
-                UserId = userId,
+                UserId = targetUserId,
                 Status = SubscriptionStatus.Pending,
                 StartDate = DateTime.UtcNow,
                 AutoRenew = false
@@ -107,15 +111,36 @@ namespace UserProtection.Application.Services.Subscriptions
 
         public async Task<SubscriptionDto?> UpdateStatusAsync(int id, string status)
         {
+            var validStatuses = new[]
+            {
+                SubscriptionStatus.Pending,
+                SubscriptionStatus.Active,
+                SubscriptionStatus.Cancelled,
+                SubscriptionStatus.Expired
+            };
+
+            if (!validStatuses.Contains(status))
+                throw new Exception("Invalid subscription status.");
+
             var sub = await _subRepo.GetByIdForUpdateAsync(id);
             if (sub == null)
                 return null;
 
-            sub.Status = status;
+            if (sub.Status == SubscriptionStatus.Active && status == SubscriptionStatus.Active)
+                throw new InvalidOperationException("Subscription is already active.");
 
-            if (status.Equals(SubscriptionStatus.Active, StringComparison.OrdinalIgnoreCase))
+            if (status == SubscriptionStatus.Active)
             {
+                var active = await _subRepo.GetActiveByUserAsync(sub.UserId!);
+                if (active != null && active.SubscriptionId != id)
+                    throw new InvalidOperationException("User already has an active subscription.");
+
+                var lastPayment = sub.Payments.OrderByDescending(p => p.PaymentDate).FirstOrDefault();
+                if (lastPayment == null || lastPayment.Status != PaymentStatus.Succeeded)
+                    throw new Exception("Cannot activate subscription without a successful payment.");
+
                 var plan = await _planRepo.GetByIdAsync(sub.PlanId);
+
                 sub.StartDate = DateTime.UtcNow;
                 sub.EndDate = plan?.BillingCycle.ToLower() switch
                 {
@@ -123,7 +148,22 @@ namespace UserProtection.Application.Services.Subscriptions
                     "yearly" => sub.StartDate.AddYears(1),
                     _ => sub.StartDate.AddMonths(1)
                 };
+
+                sub.AutoRenew = true;
             }
+
+            if (status == SubscriptionStatus.Cancelled)
+            {
+                sub.AutoRenew = false;
+                sub.EndDate = DateTime.UtcNow;
+            }
+
+            if (status == SubscriptionStatus.Expired)
+            {
+                sub.AutoRenew = false;
+            }
+
+            sub.Status = status;
 
             _subRepo.Update(sub);
             await _subRepo.SaveChangesAsync();

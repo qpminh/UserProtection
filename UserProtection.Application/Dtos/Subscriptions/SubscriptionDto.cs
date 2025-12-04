@@ -29,10 +29,8 @@
         public string? UserId { get; set; }
     }
 
-    public class UpdateSubscriptionRequest
+    public class UpdateSubscriptionStatusRequest
     {
-        public bool? AutoRenew { get; set; }
-        public string? Status { get; set; }
-        public DateTime? EndDate { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }

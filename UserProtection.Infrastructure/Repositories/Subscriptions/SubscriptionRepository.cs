@@ -86,5 +86,11 @@ namespace UserProtection.Infrastructure.Repositories.Subscriptions
                 .OrderByDescending(s => s.StartDate)
                 .AsNoTracking()
                 .ToListAsync();
+
+        public async Task<Subscription?> GetPendingByUserAsync(string userId) =>
+            await _context.Subscriptions
+                .Include(s => s.Plan)
+                .Include(s => s.Payments)
+                .FirstOrDefaultAsync(s => s.UserId == userId && s.Status == SubscriptionStatus.Pending);
     }
 }

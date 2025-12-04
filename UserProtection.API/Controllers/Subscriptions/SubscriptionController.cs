@@ -23,11 +23,14 @@ namespace UserProtection.API.Controllers.Subscriptions
         [Authorize]
         public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
         {
-            var userId = _currentUserService.UserId;
-            if (userId == null)
+            var targetUserId = !string.IsNullOrWhiteSpace(request.UserId)
+                ? request.UserId
+                : _currentUserService.UserId;
+
+            if (targetUserId == null)
                 return Unauthorized();
 
-            var sub = await _subService.CreatePendingSubscriptionAsync(request.PlanId, userId);
+            var sub = await _subService.CreatePendingSubscriptionAsync(request.PlanId, targetUserId);
             return Ok(sub);
         }
 
@@ -60,9 +63,13 @@ namespace UserProtection.API.Controllers.Subscriptions
 
         [HttpPatch("{id}/status")]
         [Authorize]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateSubscriptionRequest request)
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateSubscriptionStatusRequest request)
         {
-            var sub = await _subService.UpdateStatusAsync(id, request.Status!);
+            if (string.IsNullOrWhiteSpace(request.Status))
+                return BadRequest(new { Message = "Status is required." });
+
+            var sub = await _subService.UpdateStatusAsync(id, request.Status);
+
             if (sub == null)
                 return NotFound(new { Message = "Subscription not found." });
 
