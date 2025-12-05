@@ -11,5 +11,6 @@ namespace UserProtection.Application.Interfaces.Subscriptions
         Task<SubscriptionDto?> UpdateStatusAsync(int id, string status);
         Task<UserSubscriptionInfoDto?> GetUserSubscriptionInfoAsync(string userId);
         Task<UserSubscriptionInfoDto?> GetCurrentUserSubscriptionAsync();
+        Task<SubscriptionDto?> UpdateDatesAsync(int id, DateTime? startDate, DateTime? endDate);
     }
 }

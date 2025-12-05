@@ -204,5 +204,26 @@ namespace UserProtection.Application.Services.Subscriptions
                 .ToList()
             };
         }
+
+        public async Task<SubscriptionDto?> UpdateDatesAsync(int id, DateTime? startDate, DateTime? endDate)
+        {
+            var sub = await _subRepo.GetByIdForUpdateAsync(id);
+            if (sub == null)
+                return null;
+
+            if (startDate.HasValue && endDate.HasValue && endDate <= startDate)
+                throw new Exception("EndDate must be greater than StartDate.");
+
+            if (startDate.HasValue)
+                sub.StartDate = startDate.Value;
+
+            if (endDate.HasValue)
+                sub.EndDate = endDate.Value;
+
+            _subRepo.Update(sub);
+            await _subRepo.SaveChangesAsync();
+
+            return _mapper.Map<SubscriptionDto>(sub);
+        }
     }
 }

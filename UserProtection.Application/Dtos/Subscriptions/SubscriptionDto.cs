@@ -33,4 +33,10 @@
     {
         public string Status { get; set; } = string.Empty;
     }
+
+    public class UpdateSubscriptionDatesRequest
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Dtos.Payments;
 using UserProtection.Application.Interfaces.Payments;
+using UserProtection.Domain.Constants;
 
 namespace UserProtection.API.Controllers.Payments
 {
@@ -54,6 +55,43 @@ namespace UserProtection.API.Controllers.Payments
             if (result == null)
                 return NotFound(new { Message = "Payment not found." });
 
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAllPayments()
+        {
+            var result = await _paymentService.GetAllPaymentsAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("{paymentId:int}")]
+        [Authorize]
+        public async Task<IActionResult> GetPaymentById(int paymentId)
+        {
+            var result = await _paymentService.GetPaymentByIdAsync(paymentId);
+            if (result == null)
+                return NotFound(new { Message = "Payment not found." });
+
+            return Ok(result);
+        }
+
+        [HttpGet("status/{status}")]
+        [Authorize]
+        public async Task<IActionResult> GetPaymentsByStatus(string status)
+        {
+            var allowed = new[]
+            {
+                PaymentStatus.Pending,
+                PaymentStatus.Succeeded,
+                PaymentStatus.Failed
+            };
+
+            if (!allowed.Contains(status))
+                return BadRequest(new { Message = "Invalid payment status." });
+
+            var result = await _paymentService.GetPaymentsByStatusAsync(status);
             return Ok(result);
         }
     }

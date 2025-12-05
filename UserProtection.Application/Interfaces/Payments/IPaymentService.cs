@@ -11,5 +11,8 @@ namespace UserProtection.Application.Interfaces.Payments
         Task<ManualPaymentResponseDto> CreateManualPaymentAsync(ManualPaymentRequestDto request);
         Task<ManualPaymentResponseDto?> UpdatePaymentStatusAsync(int paymentId, string newStatus);
         Task<ManualPaymentResponseDto?> UpdatePaymentAmountAsync(int paymentId, decimal newAmount);
+        Task<IEnumerable<ManualPaymentResponseDto>> GetAllPaymentsAsync();
+        Task<ManualPaymentResponseDto?> GetPaymentByIdAsync(int paymentId);
+        Task<IEnumerable<ManualPaymentResponseDto>> GetPaymentsByStatusAsync(string status);
     }
 }

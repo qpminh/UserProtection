@@ -79,5 +79,20 @@ namespace UserProtection.API.Controllers.Subscriptions
 
             return Ok(result);
         }
+
+        [HttpPatch("{id}/dates")]
+        [Authorize]
+        public async Task<IActionResult> UpdateSubscriptionDates(int id, [FromBody] UpdateSubscriptionDatesRequest request)
+        {
+            if (request.StartDate == null && request.EndDate == null)
+                return BadRequest(new { Message = "At least one field must be provided (StartDate or EndDate)." });
+
+            var result = await _subService.UpdateDatesAsync(id, request.StartDate, request.EndDate);
+
+            if (result == null)
+                return NotFound(new { Message = "Subscription not found." });
+
+            return Ok(result);
+        }
     }
 }

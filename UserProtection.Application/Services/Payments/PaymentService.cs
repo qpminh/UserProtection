@@ -211,5 +211,51 @@ namespace UserProtection.Application.Services.Payments
                 TransactionId = payment.TransactionId
             };
         }
+
+        public async Task<IEnumerable<ManualPaymentResponseDto>> GetAllPaymentsAsync()
+        {
+            var payments = await _paymentRepo.GetAllAsync();
+
+            return payments.Select(p => new ManualPaymentResponseDto
+            {
+                PaymentId = p.PaymentId,
+                SubscriptionId = p.SubscriptionId,
+                Amount = p.Amount,
+                Status = p.Status,
+                PaymentDate = p.PaymentDate,
+                TransactionId = p.TransactionId
+            });
+        }
+
+        public async Task<IEnumerable<ManualPaymentResponseDto>> GetPaymentsByStatusAsync(string status)
+        {
+            var payments = await _paymentRepo.GetByStatusAsync(status);
+
+            return payments.Select(p => new ManualPaymentResponseDto
+            {
+                PaymentId = p.PaymentId,
+                SubscriptionId = p.SubscriptionId,
+                Amount = p.Amount,
+                Status = p.Status,
+                PaymentDate = p.PaymentDate,
+                TransactionId = p.TransactionId
+            });
+        }
+
+        public async Task<ManualPaymentResponseDto?> GetPaymentByIdAsync(int paymentId)
+        {
+            var payment = await _paymentRepo.GetByIdAsync(paymentId);
+            if (payment == null) return null;
+
+            return new ManualPaymentResponseDto
+            {
+                PaymentId = payment.PaymentId,
+                SubscriptionId = payment.SubscriptionId,
+                Amount = payment.Amount,
+                Status = payment.Status,
+                PaymentDate = payment.PaymentDate,
+                TransactionId = payment.TransactionId
+            };
+        }
     }
 }

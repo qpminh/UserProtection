@@ -14,11 +14,9 @@ namespace UserProtection.Infrastructure.Repositories.Payments
 
         public async Task<Payment?> GetByTransactionIdAsync(string transactionId) =>
             await _context.Payments
-                .Include(p => p.Subscription).ThenInclude(s => s.Plan)
+                .Include(p => p.Subscription)
+                .ThenInclude(s => s.Plan)
                 .FirstOrDefaultAsync(p => p.TransactionId == transactionId);
-
-        public async Task SaveChangesAsync() =>
-            await _context.SaveChangesAsync();
 
         public async Task<Payment?> GetByIdAsync(int paymentId)
         {
@@ -27,5 +25,27 @@ namespace UserProtection.Infrastructure.Repositories.Payments
                 .ThenInclude(s => s.Plan)
                 .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
         }
+
+        public async Task<IEnumerable<Payment>> GetAllAsync()
+        {
+            return await _context.Payments
+                .Include(p => p.Subscription)
+                .ThenInclude(s => s.Plan)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Payment>> GetByStatusAsync(string status)
+        {
+            return await _context.Payments
+                .Include(p => p.Subscription)
+                .ThenInclude(s => s.Plan)
+                .Where(p => p.Status == status)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task SaveChangesAsync() =>
+            await _context.SaveChangesAsync();
     }
 }

@@ -8,5 +8,7 @@ namespace UserProtection.Infrastructure.Interfaces.Payments
         Task<Payment?> GetByTransactionIdAsync(string transactionId);
         Task SaveChangesAsync();
         Task<Payment?> GetByIdAsync(int paymentId);
+        Task<IEnumerable<Payment>> GetByStatusAsync(string status);
+        Task<IEnumerable<Payment>> GetAllAsync();
     }
 }
