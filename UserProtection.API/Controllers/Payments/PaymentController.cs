@@ -16,44 +16,26 @@ namespace UserProtection.API.Controllers.Payments
             _paymentService = paymentService;
         }
 
-        [HttpPost("vnpay")]
-        //[Authorize(Roles = "Customer")]
-        [Authorize]
-        public async Task<IActionResult> CreateVNPayPayment([FromBody] PaymentRequestDto request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await _paymentService.CreatePaymentAsync(request);
-            return Ok(result);
-        }
-
-        [HttpPost("callback")]
-        //[AllowAnonymous]
-        [Authorize]
-        public async Task<IActionResult> VNPayCallback([FromBody] PaymentCallbackDto callback)
-        {
-            var result = await _paymentService.HandleCallbackAsync(callback);
-            if (result == null)
-                return NotFound(new { Message = "Invalid transaction." });
-
-            return Ok(result);
-        }
-
         [HttpPost("manual")]
-        //[Authorize(Roles = "Admin,Staff")]
         [Authorize]
         public async Task<IActionResult> CreateManualPayment([FromBody] ManualPaymentRequestDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var result = await _paymentService.CreateManualPaymentAsync(request);
-            return CreatedAtAction(nameof(GetByTransactionId), new { txnId = result.TransactionId }, result);
+            return Ok(result);
+        }
+
+        [HttpPut("{paymentId}/status")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePaymentStatus(int paymentId, [FromBody] UpdatePaymentStatusRequest request)
+        {
+            var result = await _paymentService.UpdatePaymentStatusAsync(paymentId, request.Status);
+            if (result == null)
+                return NotFound(new { Message = "Payment not found." });
+
+            return Ok(result);
         }
 
         [HttpGet("{txnId}")]
-        //[Authorize(Roles = "Admin,Staff,Customer")]
         [Authorize]
         public async Task<IActionResult> GetByTransactionId(string txnId)
         {
@@ -61,24 +43,14 @@ namespace UserProtection.API.Controllers.Payments
             if (payment == null)
                 return NotFound(new { Message = "Payment not found." });
 
-            return Ok(new
-            {
-                payment.PaymentId,
-                payment.SubscriptionId,
-                payment.Amount,
-                payment.Status,
-                payment.PaymentMethod,
-                payment.TransactionId,
-                payment.PaymentDate
-            });
+            return Ok(payment);
         }
 
-        [HttpPut("{paymentId}/status")]
-        //[Authorize(Roles = "Staff,Admin")]
+        [HttpPut("{paymentId}/amount")]
         [Authorize]
-        public async Task<IActionResult> UpdatePaymentStatus(int paymentId, [FromBody] UpdatePaymentStatusRequest request)
+        public async Task<IActionResult> UpdatePaymentAmount(int paymentId, [FromBody] UpdatePaymentAmountRequest request)
         {
-            var result = await _paymentService.UpdatePaymentStatusAsync(paymentId, request.Status);
+            var result = await _paymentService.UpdatePaymentAmountAsync(paymentId, request.Amount);
             if (result == null)
                 return NotFound(new { Message = "Payment not found." });
 

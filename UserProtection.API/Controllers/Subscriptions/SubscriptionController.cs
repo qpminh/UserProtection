@@ -23,32 +23,40 @@ namespace UserProtection.API.Controllers.Subscriptions
         [Authorize]
         public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
         {
-            var targetUserId = !string.IsNullOrWhiteSpace(request.UserId)
+            var userId = !string.IsNullOrWhiteSpace(request.UserId)
                 ? request.UserId
                 : _currentUserService.UserId;
 
-            if (targetUserId == null)
+            if (userId == null)
                 return Unauthorized();
 
-            var sub = await _subService.CreatePendingSubscriptionAsync(request.PlanId, targetUserId);
+            var sub = await _subService.CreatePendingSubscriptionAsync(request.PlanId, userId);
             return Ok(sub);
+        }
+
+        [HttpPatch("{id}/status")]
+        [Authorize]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateSubscriptionStatusRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Status))
+                return BadRequest(new { Message = "Status is required." });
+
+            var result = await _subService.UpdateStatusAsync(id, request.Status);
+            if (result == null)
+                return NotFound(new { Message = "Subscription not found." });
+
+            return Ok(result);
         }
 
         [HttpGet("pending")]
         [Authorize]
-        public async Task<IActionResult> GetPending()
-        {
-            var subs = await _subService.GetPendingAsync();
-            return Ok(subs);
-        }
+        public async Task<IActionResult> GetPending() =>
+            Ok(await _subService.GetPendingAsync());
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll()
-        {
-            var subs = await _subService.GetAllAsync();
-            return Ok(subs);
-        }
+        public async Task<IActionResult> GetAll() =>
+            Ok(await _subService.GetAllAsync());
 
         [HttpGet("{id}")]
         [Authorize]
@@ -61,30 +69,15 @@ namespace UserProtection.API.Controllers.Subscriptions
             return Ok(sub);
         }
 
-        [HttpPatch("{id}/status")]
-        [Authorize]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateSubscriptionStatusRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.Status))
-                return BadRequest(new { Message = "Status is required." });
-
-            var sub = await _subService.UpdateStatusAsync(id, request.Status);
-
-            if (sub == null)
-                return NotFound(new { Message = "Subscription not found." });
-
-            return Ok(sub);
-        }
-
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetMySubscription()
         {
-            var info = await _subService.GetCurrentUserSubscriptionAsync();
-            if (info == null)
-                return NotFound(new { Message = "You have no active subscription." });
+            var result = await _subService.GetCurrentUserSubscriptionAsync();
+            if (result == null)
+                return NotFound(new { Message = "You have no subscription." });
 
-            return Ok(info);
+            return Ok(result);
         }
     }
 }

@@ -190,5 +190,26 @@ namespace UserProtection.Application.Services.Payments
                 TransactionId = payment.TransactionId
             };
         }
+
+        public async Task<ManualPaymentResponseDto?> UpdatePaymentAmountAsync(int paymentId, decimal newAmount)
+        {
+            var payment = await _paymentRepo.GetByIdAsync(paymentId);
+            if (payment == null) return null;
+
+            payment.Amount = newAmount;
+            payment.PaymentDate = DateTime.UtcNow; 
+
+            await _paymentRepo.SaveChangesAsync();
+
+            return new ManualPaymentResponseDto
+            {
+                PaymentId = payment.PaymentId,
+                SubscriptionId = payment.SubscriptionId,
+                Amount = payment.Amount,
+                Status = payment.Status,
+                PaymentDate = payment.PaymentDate,
+                TransactionId = payment.TransactionId
+            };
+        }
     }
 }

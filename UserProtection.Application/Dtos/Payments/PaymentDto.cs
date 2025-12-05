@@ -46,6 +46,11 @@
 
     public class UpdatePaymentStatusRequest
     {
-        public string Status { get; set; } = string.Empty; // "Succeeded" | "Failed"
+        public string Status { get; set; } = string.Empty; 
+    }
+
+    public class UpdatePaymentAmountRequest
+    {
+        public decimal Amount { get; set; }
     }
 }

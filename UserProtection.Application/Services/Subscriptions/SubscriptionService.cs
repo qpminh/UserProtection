@@ -46,9 +46,8 @@ namespace UserProtection.Application.Services.Subscriptions
             if (string.IsNullOrWhiteSpace(targetUserId))
                 throw new UnauthorizedAccessException("User not authenticated.");
 
-            var user = await _userManager.FindByIdAsync(targetUserId);
-            if (user == null)
-                throw new Exception($"User not found with id: {targetUserId}");
+            var user = await _userManager.FindByIdAsync(targetUserId)
+                ?? throw new Exception($"User not found with id: {targetUserId}");
 
             var plan = await _planRepo.GetByIdAsync(planId)
                 ?? throw new Exception("Invalid plan.");
@@ -94,7 +93,7 @@ namespace UserProtection.Application.Services.Subscriptions
         public async Task<IEnumerable<SubscriptionDto>> GetPendingAsync()
         {
             var subs = await _subRepo.GetByStatusAsync(SubscriptionStatus.Pending);
-            return subs.Select(s => _mapper.Map<SubscriptionDto>(s));
+            return subs.Select(_mapper.Map<SubscriptionDto>);
         }
 
         public async Task<SubscriptionDto?> GetByIdAsync(int id)
@@ -106,36 +105,31 @@ namespace UserProtection.Application.Services.Subscriptions
         public async Task<IEnumerable<SubscriptionDto>> GetAllAsync()
         {
             var subs = await _subRepo.GetAllAsync();
-            return subs.Select(s => _mapper.Map<SubscriptionDto>(s));
+            return subs.Select(_mapper.Map<SubscriptionDto>);
         }
 
         public async Task<SubscriptionDto?> UpdateStatusAsync(int id, string status)
         {
-            var validStatuses = new[]
-            {
-                SubscriptionStatus.Pending,
-                SubscriptionStatus.Active,
-                SubscriptionStatus.Cancelled,
-                SubscriptionStatus.Expired
-            };
+            var allowed = new[] {
+            SubscriptionStatus.Pending,
+            SubscriptionStatus.Active,
+            SubscriptionStatus.Cancelled,
+            SubscriptionStatus.Expired
+        };
 
-            if (!validStatuses.Contains(status))
+            if (!allowed.Contains(status))
                 throw new Exception("Invalid subscription status.");
 
             var sub = await _subRepo.GetByIdForUpdateAsync(id);
             if (sub == null)
                 return null;
 
-            if (sub.Status == SubscriptionStatus.Active && status == SubscriptionStatus.Active)
-                throw new InvalidOperationException("Subscription is already active.");
-
             if (status == SubscriptionStatus.Active)
             {
-                var active = await _subRepo.GetActiveByUserAsync(sub.UserId!);
-                if (active != null && active.SubscriptionId != id)
-                    throw new InvalidOperationException("User already has an active subscription.");
+                var lastPayment = sub.Payments
+                    .OrderByDescending(p => p.PaymentDate)
+                    .FirstOrDefault();
 
-                var lastPayment = sub.Payments.OrderByDescending(p => p.PaymentDate).FirstOrDefault();
                 if (lastPayment == null || lastPayment.Status != PaymentStatus.Succeeded)
                     throw new Exception("Cannot activate subscription without a successful payment.");
 
@@ -148,8 +142,6 @@ namespace UserProtection.Application.Services.Subscriptions
                     "yearly" => sub.StartDate.AddYears(1),
                     _ => sub.StartDate.AddMonths(1)
                 };
-
-                sub.AutoRenew = true;
             }
 
             if (status == SubscriptionStatus.Cancelled)
@@ -169,6 +161,15 @@ namespace UserProtection.Application.Services.Subscriptions
             await _subRepo.SaveChangesAsync();
 
             return _mapper.Map<SubscriptionDto>(sub);
+        }
+
+        public async Task<UserSubscriptionInfoDto?> GetCurrentUserSubscriptionAsync()
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null)
+                throw new UnauthorizedAccessException("User not authenticated.");
+
+            return await GetUserSubscriptionInfoAsync(userId);
         }
 
         public async Task<UserSubscriptionInfoDto?> GetUserSubscriptionInfoAsync(string userId)
@@ -198,17 +199,10 @@ namespace UserProtection.Application.Services.Subscriptions
                         PaymentDate = p.PaymentDate,
                         TransactionId = p.TransactionId
                     }).OrderByDescending(p => p.PaymentDate).ToList()
-                }).OrderByDescending(s => s.StartDate).ToList()
+                })
+                .OrderByDescending(s => s.StartDate)
+                .ToList()
             };
-        }
-
-        public async Task<UserSubscriptionInfoDto?> GetCurrentUserSubscriptionAsync()
-        {
-            var userId = _currentUserService.UserId;
-            if (userId == null)
-                throw new UnauthorizedAccessException("User not authenticated.");
-
-            return await GetUserSubscriptionInfoAsync(userId);
         }
     }
 }
