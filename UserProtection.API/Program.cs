@@ -137,6 +137,7 @@ namespace UserProtection.API
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 var context = services.GetRequiredService<UserProtectionContext>();
+                var userManager = services.GetRequiredService<UserManager<User>>();
 
                 await DbInitializer.SeedDefaultAdminAsync(services);
                 await RoleSeeder.SeedRolesAsync(roleManager, logger);
@@ -145,6 +146,7 @@ namespace UserProtection.API
                 await BlogSeeder.SeedAsync(context);
                 await SecuritySeeder.SeedAsync(context);
                 await SubscriptionSeeder.SeedAsync(services);
+                await SeedUserSubscriptionPaymentSeeder.SeedAsync(context, userManager);
             }
 
             // Middleware
