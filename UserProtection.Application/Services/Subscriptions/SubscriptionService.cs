@@ -72,21 +72,6 @@ namespace UserProtection.Application.Services.Subscriptions
             await _subRepo.AddAsync(sub);
             await _subRepo.SaveChangesAsync();
 
-            var payment = new Payment
-            {
-                SubscriptionId = sub.SubscriptionId,
-                Amount = plan.Price,
-                PaymentMethod = "Cash",
-                Status = PaymentStatus.Pending,
-                PaymentDate = DateTime.UtcNow,
-                TransactionId = $"PENDING-{Guid.NewGuid():N}"
-            };
-
-            await _paymentRepo.AddAsync(payment);
-            await _paymentRepo.SaveChangesAsync();
-
-            sub.Payments = new List<Payment> { payment };
-
             return _mapper.Map<SubscriptionDto>(sub);
         }
 
@@ -194,7 +179,8 @@ namespace UserProtection.Application.Services.Subscriptions
                     {
                         PaymentId = p.PaymentId,
                         Amount = p.Amount,
-                        PaymentMethod = p.PaymentMethod,
+                        //PaymentMethod = p.PaymentMethod,
+                        //PaymentMethod = "Bank",
                         Status = p.Status,
                         PaymentDate = p.PaymentDate,
                         TransactionId = p.TransactionId

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using UserProtection.Domain.Entities;
 using UserProtection.Domain.Constants;
+using UserProtection.Domain.Entities;
 
 namespace UserProtection.Infrastructure.SeedData
 {
@@ -103,18 +103,18 @@ namespace UserProtection.Infrastructure.SeedData
                 };
 
                 await context.Subscriptions.AddAsync(subscription);
-                await context.SaveChangesAsync(); 
+                await context.SaveChangesAsync();
 
                 Console.WriteLine($"✓ Subscription created for {email}");
 
-                var paymentDate = startDate.AddHours(new Random().Next(1, 12)); 
+                var paymentDate = startDate.AddHours(new Random().Next(1, 12));
 
                 var payment = new Payment
                 {
                     SubscriptionId = subscription.SubscriptionId,
                     Amount = basicPlan.Price,
                     Status = PaymentStatus.Succeeded,
-                    PaymentMethod = "Manual",
+                    PaymentMethod = "Bank",
                     PaymentDate = paymentDate,
                     TransactionId = $"SEED-{Guid.NewGuid():N}",
                     FrontendReturnUrl = null

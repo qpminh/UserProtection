@@ -20,7 +20,6 @@ using UserProtection.Application.Services.Plans;
 using UserProtection.Application.Services.Security;
 using UserProtection.Application.Services.Subscriptions;
 using UserProtection.Application.Services.Tenants;
-using UserProtection.Domain.Entities;
 
 namespace UserProtection.Application.Dependency
 {

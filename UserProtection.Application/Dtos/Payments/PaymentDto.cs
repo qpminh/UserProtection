@@ -29,7 +29,7 @@
     {
         public int SubscriptionId { get; set; }
         public decimal Amount { get; set; }
-        public string PaymentMethod { get; set; } = "Cash";
+        //public string PaymentMethod { get; set; } = "Bank";
         public string Status { get; set; } = "Succeeded";
         public string? TransactionId { get; set; }
     }
@@ -46,7 +46,7 @@
 
     public class UpdatePaymentStatusRequest
     {
-        public string Status { get; set; } = string.Empty; 
+        public string Status { get; set; } = string.Empty;
     }
 
     public class UpdatePaymentAmountRequest

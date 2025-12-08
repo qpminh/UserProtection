@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using UserProtection.Application.Interfaces.Gemini;
 
 namespace UserProtection.Application.Services.Gemini

@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Interfaces.Cores;
 using UserProtection.Application.Interfaces.Security;
-using UserProtection.Domain.Entities;
 
 namespace UserProtection.API.Controllers.Security
 {
@@ -13,8 +11,8 @@ namespace UserProtection.API.Controllers.Security
         private readonly IUserDomainEntriesService _svc;
         private readonly ICurrentUserService _currentUser;
 
-        public UserDomainEntriesController(IUserDomainEntriesService svc, ICurrentUserService currentUser) 
-        { 
+        public UserDomainEntriesController(IUserDomainEntriesService svc, ICurrentUserService currentUser)
+        {
             _svc = svc;
             _currentUser = currentUser;
         }
@@ -22,7 +20,7 @@ namespace UserProtection.API.Controllers.Security
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            var res =  await _svc.GetAll();
+            var res = await _svc.GetAll();
             return Ok(res);
         }
 

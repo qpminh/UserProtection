@@ -7,8 +7,10 @@ using System.Security.Claims;
 using System.Text;
 using UserProtection.Application.Dtos.Cores;
 using UserProtection.Application.Interfaces.Cores;
+using UserProtection.Domain.Constants;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Interfaces.Core;
+using UserProtection.Infrastructure.Interfaces.Subscriptions;
 
 namespace UserProtection.Application.Services.Cores
 {
@@ -20,6 +22,7 @@ namespace UserProtection.Application.Services.Cores
         private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
         private readonly IConfiguration _config;
+        private readonly ISubscriptionRepository _subRepo;
 
         public UserService(
             IUserRepository userRepository,
@@ -27,7 +30,8 @@ namespace UserProtection.Application.Services.Cores
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IMapper mapper,
-            IConfiguration config)
+            IConfiguration config,
+            ISubscriptionRepository subRepo)       
         {
             _userRepository = userRepository;
             _auditLogRepository = auditLogRepository;
@@ -35,6 +39,7 @@ namespace UserProtection.Application.Services.Cores
             _signInManager = signInManager;
             _mapper = mapper;
             _config = config;
+            _subRepo = subRepo;                   
         }
 
         public async Task Add(User user, string password)
@@ -83,8 +88,9 @@ namespace UserProtection.Application.Services.Cores
 
             await LogAction(user.Id, user.TenantId, "User Logged In");
 
-            return GenerateJwtToken(user);
+            return await GenerateJwtToken(user);
         }
+
         public async Task Logout()
         {
             await _signInManager.SignOutAsync();
@@ -101,13 +107,13 @@ namespace UserProtection.Application.Services.Cores
             });
         }
 
-        private string GenerateJwtToken(User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("userId", user.Id), 
+                new Claim("userId", user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                 new Claim("tenantId", user.TenantId?.ToString() ?? string.Empty)
             };
@@ -128,6 +134,9 @@ namespace UserProtection.Application.Services.Cores
                     claims.Add(new Claim("tenantDomain", user.Tenant.Domain));
             }
 
+            var hasSubscription = await HasValidSubscription(user.Id);
+            claims.Add(new Claim("hasValidSubscription", hasSubscription ? "true" : "false"));
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -140,6 +149,18 @@ namespace UserProtection.Application.Services.Cores
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<bool> HasValidSubscription(string userId)
+        {
+            var subs = await _subRepo.GetAllByUserAsync(userId);
+
+            if (subs == null || !subs.Any()) return false;
+
+            return subs.Any(s =>
+                s.Status == SubscriptionStatus.Active &&
+                (s.EndDate == null || s.EndDate > DateTime.UtcNow)
+            );
         }
     }
 }

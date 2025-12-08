@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserProtection.Application.Dtos.Subscriptions;
-using UserProtection.Application.Interfaces.Subscriptions;
 using UserProtection.Application.Interfaces.Cores;
+using UserProtection.Application.Interfaces.Subscriptions;
 
 namespace UserProtection.API.Controllers.Subscriptions
 {

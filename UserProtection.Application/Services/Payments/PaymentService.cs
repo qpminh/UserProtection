@@ -1,7 +1,6 @@
 ﻿using UserProtection.Application.Dtos.Payments;
 using UserProtection.Application.Interfaces.Payments;
 using UserProtection.Application.Interfaces.Subscriptions;
-using UserProtection.Application.Services.Subscriptions;
 using UserProtection.Domain.Constants;
 using UserProtection.Domain.Entities;
 using UserProtection.Infrastructure.Helpers;
@@ -42,7 +41,7 @@ namespace UserProtection.Application.Services.Payments
             {
                 SubscriptionId = subscription.SubscriptionId,
                 Amount = amount,
-                PaymentMethod = "VNPay",
+                PaymentMethod = "Bank",
                 Status = PaymentStatus.Pending,
                 PaymentDate = DateTime.UtcNow,
                 TransactionId = transactionId,
@@ -114,7 +113,8 @@ namespace UserProtection.Application.Services.Payments
             {
                 SubscriptionId = subscription.SubscriptionId,
                 Amount = request.Amount,
-                PaymentMethod = request.PaymentMethod,
+                //PaymentMethod = request.PaymentMethod,
+                PaymentMethod = "Bank",
                 Status = request.Status,
                 PaymentDate = DateTime.UtcNow,
                 TransactionId = request.TransactionId ?? $"MANUAL-{Guid.NewGuid():N}",
@@ -197,7 +197,7 @@ namespace UserProtection.Application.Services.Payments
             if (payment == null) return null;
 
             payment.Amount = newAmount;
-            payment.PaymentDate = DateTime.UtcNow; 
+            payment.PaymentDate = DateTime.UtcNow;
 
             await _paymentRepo.SaveChangesAsync();
 

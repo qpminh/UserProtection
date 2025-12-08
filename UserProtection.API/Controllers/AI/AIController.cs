@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text;
 using UserProtection.Application.Dtos.AI;
 using UserProtection.Application.Interfaces.Gemini;
 
