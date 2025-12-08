@@ -121,7 +121,30 @@ namespace UserProtection.API
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ClockSkew = TimeSpan.Zero
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var authorization = context.Request.Headers["Authorization"].ToString();
+
+                        if (!string.IsNullOrEmpty(authorization))
+                        {
+                            if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = authorization.Substring("Bearer ".Length).Trim();
+                            }
+                            else
+                            {
+                                context.Token = authorization.Trim();
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
+
 
             var app = builder.Build();
 
