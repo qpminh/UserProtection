@@ -12,17 +12,23 @@ namespace UserProtection.Infrastructure.Repositories.Payments
         public async Task AddAsync(Payment payment) =>
             await _context.Payments.AddAsync(payment);
 
-        public async Task<Payment?> GetByTransactionIdAsync(string transactionId) =>
-            await _context.Payments
+        public async Task<Payment?> GetByTransactionIdAsync(string transactionId)
+        {
+            return await _context.Payments
                 .Include(p => p.Subscription)
-                .ThenInclude(s => s.Plan)
+                    .ThenInclude(s => s.Plan)
+                .Include(p => p.Subscription)
+                    .ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(p => p.TransactionId == transactionId);
+        }
 
         public async Task<Payment?> GetByIdAsync(int paymentId)
         {
             return await _context.Payments
                 .Include(p => p.Subscription)
-                .ThenInclude(s => s.Plan)
+                    .ThenInclude(s => s.Plan)
+                .Include(p => p.Subscription)
+                    .ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
         }
 
@@ -30,16 +36,21 @@ namespace UserProtection.Infrastructure.Repositories.Payments
         {
             return await _context.Payments
                 .Include(p => p.Subscription)
-                .ThenInclude(s => s.Plan)
+                    .ThenInclude(s => s.Plan)
+                .Include(p => p.Subscription)
+                    .ThenInclude(s => s.User)
                 .AsNoTracking()
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<Payment>> GetByStatusAsync(string status)
         {
             return await _context.Payments
                 .Include(p => p.Subscription)
-                .ThenInclude(s => s.Plan)
+                    .ThenInclude(s => s.Plan)
+                .Include(p => p.Subscription)
+                    .ThenInclude(s => s.User)
                 .Where(p => p.Status == status)
                 .AsNoTracking()
                 .ToListAsync();

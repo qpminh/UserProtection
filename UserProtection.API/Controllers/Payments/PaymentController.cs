@@ -40,7 +40,7 @@ namespace UserProtection.API.Controllers.Payments
         [Authorize]
         public async Task<IActionResult> GetByTransactionId(string txnId)
         {
-            var payment = await _paymentService.GetByTransactionIdAsync(txnId);
+            var payment = await _paymentService.GetByTransactionIdDetailedAsync(txnId);
             if (payment == null)
                 return NotFound(new { Message = "Payment not found." });
 

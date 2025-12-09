@@ -53,4 +53,18 @@
     {
         public decimal Amount { get; set; }
     }
+
+    public class PaymentWithUserDto
+    {
+        public int PaymentId { get; set; }
+        public int SubscriptionId { get; set; }
+        public decimal Amount { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime PaymentDate { get; set; }
+        public string TransactionId { get; set; } = string.Empty;
+
+        public string UserId { get; set; } = string.Empty;
+        public string UserEmail { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+    }
 }

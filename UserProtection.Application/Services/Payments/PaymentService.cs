@@ -98,11 +98,6 @@ namespace UserProtection.Application.Services.Payments
             };
         }
 
-        public async Task<Payment?> GetByTransactionIdAsync(string txnId)
-        {
-            return await _paymentRepo.GetByTransactionIdAsync(txnId);
-        }
-
         public async Task<ManualPaymentResponseDto> CreateManualPaymentAsync(ManualPaymentRequestDto request)
         {
             var subscription = await _subRepo.GetByIdAsync(request.SubscriptionId);
@@ -212,49 +207,77 @@ namespace UserProtection.Application.Services.Payments
             };
         }
 
-        public async Task<IEnumerable<ManualPaymentResponseDto>> GetAllPaymentsAsync()
+        public async Task<IEnumerable<PaymentWithUserDto>> GetAllPaymentsAsync()
         {
             var payments = await _paymentRepo.GetAllAsync();
 
-            return payments.Select(p => new ManualPaymentResponseDto
+            return payments.Select(p => new PaymentWithUserDto
             {
                 PaymentId = p.PaymentId,
                 SubscriptionId = p.SubscriptionId,
                 Amount = p.Amount,
                 Status = p.Status,
                 PaymentDate = p.PaymentDate,
-                TransactionId = p.TransactionId
+                TransactionId = p.TransactionId,
+                UserId = p.Subscription?.User?.Id ?? "",
+                UserEmail = p.Subscription?.User?.Email ?? "",
+                FullName = $"{p.Subscription?.User?.FirstName} {p.Subscription?.User?.LastName}".Trim()
             });
         }
 
-        public async Task<IEnumerable<ManualPaymentResponseDto>> GetPaymentsByStatusAsync(string status)
+        public async Task<IEnumerable<PaymentWithUserDto>> GetPaymentsByStatusAsync(string status)
         {
             var payments = await _paymentRepo.GetByStatusAsync(status);
 
-            return payments.Select(p => new ManualPaymentResponseDto
+            return payments.Select(p => new PaymentWithUserDto
             {
                 PaymentId = p.PaymentId,
                 SubscriptionId = p.SubscriptionId,
                 Amount = p.Amount,
                 Status = p.Status,
                 PaymentDate = p.PaymentDate,
-                TransactionId = p.TransactionId
+                TransactionId = p.TransactionId,
+                UserId = p.Subscription?.User?.Id ?? "",
+                UserEmail = p.Subscription?.User?.Email ?? "",
+                FullName = $"{p.Subscription?.User?.FirstName} {p.Subscription?.User?.LastName}".Trim()
             });
         }
 
-        public async Task<ManualPaymentResponseDto?> GetPaymentByIdAsync(int paymentId)
+        public async Task<PaymentWithUserDto?> GetPaymentByIdAsync(int paymentId)
         {
-            var payment = await _paymentRepo.GetByIdAsync(paymentId);
-            if (payment == null) return null;
+            var p = await _paymentRepo.GetByIdAsync(paymentId);
+            if (p == null) return null;
 
-            return new ManualPaymentResponseDto
+            return new PaymentWithUserDto
             {
-                PaymentId = payment.PaymentId,
-                SubscriptionId = payment.SubscriptionId,
-                Amount = payment.Amount,
-                Status = payment.Status,
-                PaymentDate = payment.PaymentDate,
-                TransactionId = payment.TransactionId
+                PaymentId = p.PaymentId,
+                SubscriptionId = p.SubscriptionId,
+                Amount = p.Amount,
+                Status = p.Status,
+                PaymentDate = p.PaymentDate,
+                TransactionId = p.TransactionId,
+                UserId = p.Subscription?.User?.Id ?? "",
+                UserEmail = p.Subscription?.User?.Email ?? "",
+                FullName = $"{p.Subscription?.User?.FirstName} {p.Subscription?.User?.LastName}".Trim()
+            };
+        }
+
+        public async Task<PaymentWithUserDto?> GetByTransactionIdDetailedAsync(string txnId)
+        {
+            var p = await _paymentRepo.GetByTransactionIdAsync(txnId);
+            if (p == null) return null;
+
+            return new PaymentWithUserDto
+            {
+                PaymentId = p.PaymentId,
+                SubscriptionId = p.SubscriptionId,
+                Amount = p.Amount,
+                Status = p.Status,
+                PaymentDate = p.PaymentDate,
+                TransactionId = p.TransactionId,
+                UserId = p.Subscription?.User?.Id ?? "",
+                UserEmail = p.Subscription?.User?.Email ?? "",
+                FullName = $"{p.Subscription?.User?.FirstName} {p.Subscription?.User?.LastName}".Trim()
             };
         }
     }
